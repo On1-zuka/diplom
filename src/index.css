@@ -34,3 +34,8 @@ ul li{list-style-type: none;}
 img{vertical-align: top;}
 
 h1,h2, h3, h4, h5, h6{font-style: inherit; font-weight: 400;}
+
+@font-face {
+	font-family: 'Open_Sans';
+	src: url('./assets/Open_Sans/OpenSans-VariableFont_wdth\,wght.ttf') format('ttf');
+}

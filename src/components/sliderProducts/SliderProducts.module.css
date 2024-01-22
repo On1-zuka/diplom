@@ -1,0 +1,6 @@
+.slider{
+  display: flex;
+  justify-content: space-between; /* или другие свойства flex, чтобы распределить карточки */
+  align-items: center; /* или другие свойства flex, чтобы выровнять карточки */
+  flex-direction: row;
+}

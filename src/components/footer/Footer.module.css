@@ -1,0 +1,36 @@
+.footer{
+    background-color: #F5F5F5;
+    padding: 30px 0 25px;
+}
+.container{
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+.footer__menu{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 50px;
+}
+.footer__menu__title{
+    font-size: 20px;
+    font-weight: 600;
+}
+.menu__list{
+    max-width: 220px;
+}
+.footer__menu__item{
+    margin: 0 0 15px 0px;
+}
+.footer__bottom{
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+}
+.footer__bottom__txt{
+    max-width: 900px;
+}
+.app{
+    display: flex;
+    gap: 15px;
+}

@@ -1,0 +1,11 @@
+.customLeftArrow{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    color: orange;
+    margin: 0px 30px 0px 30px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
