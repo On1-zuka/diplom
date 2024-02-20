@@ -1,0 +1,17 @@
+.categoriesItem {
+    text-align: center;
+    background-color: #eeebeb;
+    border-radius: 20px;
+    height: 300px;
+    width: 270px;
+}
+
+.categories_title {
+    padding: 25px 0;
+    font-size: 20px;
+}
+
+.categories_img {
+    width: 250px;
+    height: 200px;
+}
