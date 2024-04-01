@@ -1,93 +1,82 @@
 const sequelize = require('../db');
-const { DataTypes } = require('sequelize')
+const { DataTypes, BOOLEAN } = require('sequelize')
 
 const User = sequelize.define('user', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    login: { type: DataTypes.STRING, allowNull: false, unique: true },
+    name: { type: DataTypes.STRING, allowNull: false },
+    surname: { type: DataTypes.STRING, allowNull: false },
+    address: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, unique: true },
     password: { type: DataTypes.STRING },
-    role: { type: DataTypes.STRING, defaultValue: "USER" }
 })
 
-const Basket = sequelize.define('basket', {
+const Cart = sequelize.define('cart', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    status: { type: DataTypes.INTEGER },
+    orderTime: { type: DataTypes.DATE },
+    pickup: { type: BOOLEAN },
 })
 
-const BasketProduct = sequelize.define('basket_product', {
+const Cart_product = sequelize.define('cart_product', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    quantity: { type: DataTypes.INTEGER },
 })
 
-const Product = sequelize.define('product', {
+const Brands = sequelize.define('brands', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     img: { type: DataTypes.STRING, allowNull: false },
     name: { type: DataTypes.STRING, unique: true, allowNull: false },
-    price: { type: DataTypes.INTEGER, allowNull: false },
-    rating: { type: DataTypes.INTEGER, defaultValue: 0 }
 })
 
-const Category = sequelize.define('category', {
+const Categories = sequelize.define('categories', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     img: { type: DataTypes.STRING, allowNull: false },
-    name: { type: DataTypes.STRING, unique: true, allowNull: false }
+    name: { type: DataTypes.STRING, unique: true, allowNull: false },
 })
 
-const Brand = sequelize.define('brand', {
+const Products = sequelize.define('products', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    img: { type: DataTypes.STRING, allowNull: false },
-    name: { type: DataTypes.STRING, unique: true, allowNull: false }
-})
-
-const Rating = sequelize.define('rating', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    rate: { type: DataTypes.INTEGER, allowNull: false }
-})
-
-const ProductInfo = sequelize.define('product_info', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    title: { type: DataTypes.STRING, allowNull: false },
+    name: { type: DataTypes.STRING, unique: true, allowNull: false },
+    prise: { type: DataTypes.DOUBLE, allowNull: false },
+    rating: { type: DataTypes.DOUBLE, allowNull: false },
     description: { type: DataTypes.STRING, allowNull: false },
-    discount: { type: DataTypes.INTEGER },
-    availability: { type: DataTypes.INTEGER, allowNull: false }
+    discount: { type: DataTypes.DOUBLE },
+    country: { type: DataTypes.STRING, allowNull: false },
+    purpose: { type: DataTypes.STRING, allowNull: false },
+    article: { type: DataTypes.STRING, allowNull: false },
 })
 
-const CategoryBrand = sequelize.define('category_brand', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }
+const Favorite = sequelize.define('favorite', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 })
 
-User.hasOne(Basket)
-Basket.belongsTo(User)
+const Favorite_product = sequelize.define('favorite_product', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+})
 
-User.hasMany(Rating)
-Rating.belongsTo(User)
+User.hasOne(Cart)
+Cart.belongsTo(User)
 
-Basket.hasMany(BasketProduct)
-BasketProduct.belongsTo(Basket)
+Brands.hasMany(Products)
+Products.belongsTo(Brands)
 
-Category.hasMany(Product)
-Product.belongsTo(Category)
+Categories.hasMany(Products)
+Products.belongsTo(Categories)
 
-Brand.hasMany(Product)
-Product.belongsTo(Brand)
+Cart.belongsToMany(Products, { through: Cart_product });
+Products.belongsToMany(Cart, { through: Cart_product });
 
-Product.hasMany(Rating)
-Rating.belongsTo(Product)
-
-Product.hasMany(BasketProduct)
-BasketProduct.belongsTo(Product)
-
-Product.hasMany(ProductInfo)
-ProductInfo.belongsTo(Product)
-
-Category.belongsToMany(Brand, { through: CategoryBrand })
-Brand.belongsToMany(Category, { through: CategoryBrand })
+Favorite.belongsToMany(Products, { through: Favorite_product })
+Products.belongsToMany(Favorite, { through: Favorite_product })
 
 module.exports = {
     User,
-    Basket,
-    BasketProduct,
-    Rating,
-    Product,
-    ProductInfo,
-    Category,
-    Brand,
-    CategoryBrand
+    Cart,
+    Cart_product,
+    Brands,
+    Categories,
+    Products,
+    Favorite,
+    Favorite_product
 }
