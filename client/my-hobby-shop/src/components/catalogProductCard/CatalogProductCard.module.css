@@ -1,0 +1,86 @@
+.productCardBlock{
+    display: flex;
+    height: 240px;
+    border-bottom: 1px solid #bebebe
+}
+.imgCard{
+    text-align: center;
+    width: 250px;
+    margin: 10px 0px 0px 0px;
+}
+.productCardImg{
+    height: 218px;
+    width: 200px;
+}
+.content{
+    width: 400px;
+}
+.availability{
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0px 10px 0px;
+}
+.favorite{
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.favorite span{
+    text-align: center;
+    font-size: 16px;
+    margin: 0px 0px 0px 5px;
+}
+.checkProduct{
+    display: flex;
+    align-items: center;
+    background-color: rgba(101, 254, 0, 0.5);
+    color: green;
+    border-radius: 5px;
+    padding: 5px;
+}
+.closeProduct{
+    display: flex;
+    align-items: center;
+    background-color: rgba(215, 38, 38, 0.5);
+    color: red;
+    border-radius: 5px;
+    padding: 5px;
+}
+.nameProduct{
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 21px;
+    cursor: pointer;
+    margin: 0px 0px 18px 0px;
+}
+.nameProduct:hover{
+    text-decoration: underline;
+}
+.descriptionProduct{
+    font-size: 16px;
+    line-height: 22px;
+    margin: 0px 0px 5px 0px;
+    overflow: hidden; /* скрыть текст, выходящий за пределы контейнера */
+    display: -webkit-box; /* использовать flexbox для многоточия */
+    -webkit-line-clamp: 4; /* максимальное количество строк */
+    -webkit-box-orient: vertical; /* направление текста */
+    word-wrap: break-word; /* разрешить перенос слов */
+}
+.priceAndButton{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 250px;
+    margin: 0px 10px;
+}
+.priceAndButton p{
+    font-size: 20px;
+    margin: 52px 0px 20px 0px;
+}
+.cart{
+    height: 40px;
+    border-radius: 5px;
+    background-color: orange;
+    color: white;
+    margin: 0px 0px 45px 0px;
+}

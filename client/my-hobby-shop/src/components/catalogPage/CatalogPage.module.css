@@ -1,0 +1,135 @@
+.container {
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+.fromCatalog {
+    display: flex;
+    justify-content: space-between;
+}
+.sortName{
+    font-size: 20px;
+}
+.selectName {
+    font-size: 20px;
+    margin: 0px 0px 20px 0px;
+}
+.sortBy {
+    display: flex;
+    align-items: center;
+    padding: 10px 0px 20px 0px;
+}
+
+.sortCombobox {
+    border-radius: 15px;
+    border: 1px solid #bebebe;
+    margin: 0px 0px 0px 8px;
+    padding: 3px;
+}
+
+.filter {
+    width: 255px;
+    height: 800px;
+}
+
+.content {
+    border-top: 1px solid #bebebe;
+}
+.brand,
+.category{
+    padding: 0px 0px 10px 0px;
+    margin: 0px 0px 10px 0px;
+}
+
+.hideFilter {
+    height: 45px;
+    width: 100%;
+    border-radius: 15px;
+    color: white;
+    background-color: orange;
+    margin: 5px 0px 20px 0px;
+}
+
+.inputData {
+    height: 45px;
+    width: 100%;
+    border: 1px solid #bebebe;
+    border-radius: 15px;
+    padding: 10px;
+    margin: 20px 0px 20px 0px;
+}
+
+.list {
+    max-height: 130px;
+    overflow-y: auto;
+}
+
+.list::-webkit-scrollbar {
+    width: 8px;
+    background-color: white;
+}
+
+.list::-webkit-scrollbar-track {
+    background-color: #fefefe;
+    border-radius: 4px;
+}
+
+.list::-webkit-scrollbar-thumb {
+    background-color: orange;
+    border-radius: 4px;
+}
+.orangeThumb {
+    color: orange;
+}
+
+.orangeRail {
+   color: #bebebe;
+}
+
+.orangeTrack {
+    color: orange;
+}
+.orangeThumb:focus {
+    color: orange;
+    box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.5);
+
+}
+.orangeThumb:hover {
+    color: orange;
+}
+.blockPrice{
+    display: flex;
+    justify-content: space-between;
+}
+.maxPrice,
+.minPrice{
+    border: 1px solid #bebebe;
+    border-radius: 15px;
+    height: 45px;
+    width: 48%;
+    padding: 0px 0px 0px 10px;
+}
+.blockPrice input[type="number"]::-webkit-inner-spin-button,
+.blockPrice input[type="number"]::-webkit-outer-spin-button,
+.blockPrice input[type="number"]::-webkit-inner-spin-button,
+.blockPrice input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    
+}
+.blockPrice input[type="number"] {
+    -moz-appearance: textfield; /* Для Firefox */
+    appearance: textfield; /* Для Edge и IE */
+    -webkit-appearance: none; /* Для Chrome, Safari, Opera */
+    margin: 20px 0px 20px 0px;
+}
+.applyFilter{
+    height: 45px;
+    width: 100%;
+    border-radius: 15px;
+    color: white;
+    background-color: orange;
+}
+.pagination{
+    margin: 20px 0px 0px 0px ;
+}

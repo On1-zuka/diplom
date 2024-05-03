@@ -1,33 +1,32 @@
-import BrandItem from '../../common/brand/BrandItem'
-import img1 from '../../assets/brand/1.png'
-import img2 from '../../assets/brand/2.png'
-import img3 from '../../assets/brand/3.png'
-import img4 from '../../assets/brand/4.png'
-import img5 from '../../assets/brand/5.png'
-import img6 from '../../assets/brand/6.png'
-import img7 from '../../assets/brand/7.png'
-import img8 from '../../assets/brand/8.png'
-import styles from '../brandsList/BrandsList.module.css'
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import BrandItem from '../../common/brand/BrandItem';
+import styles from '../brandsList/BrandsList.module.css';
 
-export default function BradsList() {
+export default function BrandsList() {
+    const [brands, setBrands] = useState([]);
 
-    const [brands, setBrands] = useState([
-        { id: 1, body: img1 },
-        { id: 2, body: img2 },
-        { id: 3, body: img3 },
-        { id: 4, body: img4 },
-        { id: 5, body: img5 },
-        { id: 6, body: img6 },
-        { id: 7, body: img7 },
-        { id: 8, body: img8 },
-    ])
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${process.env.API_BASE_URL}/brands`);
+                // Сортируем бренды по id и берем первые 8
+                const sortedBrands = response.data.sort((a, b) => a.id - b.id).slice(0, 8);
+                setBrands(sortedBrands);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
+    }, []);
 
     return (
         <div className={styles.brandsList}>
-            {brands.map((card) =>
-                <BrandItem card={card} key={card.id} />
+            {brands && brands.length > 0 ? (
+                brands.map((brand) => <BrandItem key={brand.id} brand={brand} />)
+            ) : (
+                <p>No brands found.</p>
             )}
         </div>
-    )
+    );
 }

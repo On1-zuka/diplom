@@ -14,7 +14,7 @@ class CategoryController {
             if (!name) {
                 return next(ApiError.badRequest('Необходимо указать название категории'));
             }
-            const { img } = req.files
+            const { img } = req.files 
             const mimeType = mime.lookup(img.name);
             if (!mimeType.startsWith('image/')) {
                 return next(ApiError.badRequest('Пожалуйста, загрузите изображение'));
@@ -37,17 +37,17 @@ class CategoryController {
             return next(ApiError.badRequest(e.message));
         }
     }
-    async getAll(req, res, next) {
-        try {
-            const category = await Categories.findAll();
-            if (!category) {
-                return next(ApiError.badRequest("Категории не найдена"))
-            }
-            return res.json(category)
-        } catch (e) {
-            return next(ApiError.internal(e.message));
+   async getAll(req, res, next) {
+    try {
+        const categories = await Categories.findAll();
+        if (!categories || categories.length === 0) {
+            return next(ApiError.badRequest("Категории не найдены"));
         }
+        return res.json(categories);
+    } catch (e) {
+        return next(ApiError.internal(e.message));
     }
+}
     async getOne(req, res, next) {
         try {
             const { id } = req.params;
@@ -83,38 +83,46 @@ class CategoryController {
         try {
             const { id } = req.params;
             const { name } = req.body;
-            const { img } = req.files;
-
+            const { img } = req.files || {};
+    
             const category = await Categories.findOne({ where: { id } });
             if (!category) {
                 return next(ApiError.notFound('Категория не найдена'));
             }
-
+    
             if (!name && !img) {
                 return next(ApiError.badRequest('Не указаны данные для обновления'));
             }
-
+    
             if (name) {
                 category.name = name;
             }
-
+    
             if (img) {
-                const mimeType = mime.lookup(img.name);
-                if (!mimeType.startsWith('image/')) {
-                    return next(ApiError.badRequest('Пожалуйста, загрузите изображение'));
+                const allowedExtensions = ['jpg', 'jpeg', 'png'];
+                const fileExtension = img.name.split('.').pop().toLowerCase();
+                if (!allowedExtensions.includes(fileExtension)) {
+                    return next(ApiError.badRequest('Недопустимый тип файла. Разрешены только JPG, JPEG, PNG'));
                 }
-                const fileExtension = img.name.split('.').pop();
+    
+                if (category.img) {
+                    const oldFilePath = path.resolve(__dirname, '..', 'static', category.img);
+                    if (fs.existsSync(oldFilePath)) {
+                        fs.unlinkSync(oldFilePath);
+                    }
+                }
+    
                 const fileName = uuid.v4() + "." + fileExtension;
                 const filePath = path.resolve(__dirname, '..', 'static', fileName);
                 await img.mv(filePath);
                 category.img = fileName;
             }
-
+    
             await category.save();
-
+    
             return res.json(category);
         } catch (e) {
-            return next(ApiError.internal(e.message))
+            return next(ApiError.internal(e.message));
         }
     }
 }

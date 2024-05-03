@@ -2,10 +2,11 @@ import styles from './HomePage.module.css'
 import HomeSlider from '../homeSlider/HomeSlider'
 import SliderProducts from '../sliderProducts/SliderProducts'
 import CategoriesList from '../categoriesList/CategoriesList'
-import BradsList from '../brandsList/BrandsList'
-import DiscountsList from '../discounts/DiscountsList'
+import BrandsList from '../brandsList/BrandsList'
+import { Link, useNavigate } from "react-router-dom";
 
 export default function HomePage() {
+    const navigate = useNavigate();
     return (
         <main className={styles.HomePage__main}>
             <div className={styles.container}>
@@ -13,25 +14,25 @@ export default function HomePage() {
                     <HomeSlider />
                 </section>
                 <section className={styles.main__product}>
-                    {/* <SliderProducts/> */}
+                    <div className={styles.titleAndLink}>
+                        <h2 className={styles.title}>Товар дня</h2>
+                        <a className={styles.link} onClick={() => navigate('/catalog')}>Смотреть все</a>
+                    </div>
+                    <SliderProducts />
                 </section>
                 <section className={styles.main__categories}>
-                    <h2 className={styles.title}>Популярные категории</h2>
+                    <div className={styles.titleAndLink}>
+                        <h2 className={styles.title}>Категории</h2>
+                        <a className={styles.link} onClick={() => navigate('/categories')}>Смотреть все</a>
+                    </div>
                     <CategoriesList />
                 </section>
                 <section className={styles.main__brands}>
                     <div className={styles.titleAndLink}>
                         <h2 className={styles.title}>Бренды</h2>
-                        <a className={styles.titleAndLink} href="#">Смотреть все</a>
+                        <a className={styles.link} onClick={() => navigate('/brands')}>Смотреть все</a>
                     </div>
-                    <BradsList/>
-                </section>
-                <section className={styles.main__discounts}>
-                    <div className={styles.titleAndLink}>
-                        <h2 className={styles.title}>Скидки</h2>
-                        <a className={styles.titleAndLink} href="#">Смотреть все</a>
-                    </div>
-                    <DiscountsList/>
+                    <BrandsList />
                 </section>
             </div>
         </main>

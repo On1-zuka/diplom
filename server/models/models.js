@@ -6,6 +6,8 @@ const User = sequelize.define('user', {
     login: { type: DataTypes.STRING, allowNull: false, unique: true },
     name: { type: DataTypes.STRING, allowNull: false },
     surname: { type: DataTypes.STRING, allowNull: false },
+    patronymic: { type: DataTypes.STRING, allowNull: false },
+    phone: { type: DataTypes.STRING, allowNull: false },
     address: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, unique: true },
     password: { type: DataTypes.STRING },
@@ -21,6 +23,7 @@ const Cart = sequelize.define('cart', {
 const Cart_product = sequelize.define('cart_product', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     quantity: { type: DataTypes.INTEGER },
+    price_cart: {type: DataTypes.REAL},
 })
 
 const Brands = sequelize.define('brands', {
@@ -37,14 +40,17 @@ const Categories = sequelize.define('categories', {
 
 const Products = sequelize.define('products', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING, unique: true, allowNull: false },
-    prise: { type: DataTypes.DOUBLE, allowNull: false },
-    rating: { type: DataTypes.DOUBLE, allowNull: false },
+    img: { type: DataTypes.STRING, allowNull: false },
+    quantity_product: {type: DataTypes.INTEGER, defaultValue: 0},
+    name: { type: DataTypes.STRING, allowNull: false },
+    price: { type: DataTypes.REAL, allowNull: false },
+    rating: { type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0 },
     description: { type: DataTypes.STRING, allowNull: false },
     discount: { type: DataTypes.DOUBLE },
     country: { type: DataTypes.STRING, allowNull: false },
     purpose: { type: DataTypes.STRING, allowNull: false },
     article: { type: DataTypes.STRING, allowNull: false },
+    set: {type: DataTypes.BOOLEAN, allowNull: false}
 })
 
 const Favorite = sequelize.define('favorite', {
@@ -58,12 +64,18 @@ const Favorite_product = sequelize.define('favorite_product', {
 User.hasOne(Cart)
 Cart.belongsTo(User)
 
+User.hasOne(Favorite)
+Cart.belongsTo(User)
+
 Brands.hasMany(Products)
 Products.belongsTo(Brands)
 
 Categories.hasMany(Products)
 Products.belongsTo(Categories)
 
+
+Cart_product.belongsTo(Products, { foreignKey: 'productId' });
+Products.hasMany(Cart_product, { foreignKey: 'productId' });
 Cart.belongsToMany(Products, { through: Cart_product });
 Products.belongsToMany(Cart, { through: Cart_product });
 

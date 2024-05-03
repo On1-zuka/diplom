@@ -1,0 +1,90 @@
+.formCard{
+    height: 200px;
+    width: 780px;
+    padding: 20px 0px;
+    border-bottom: 1px solid #bebebe;
+}
+.imgProductCard{
+    height: 190px;
+    width: 190px;
+}
+.imgProductCard img{
+    height: 160px;
+    width: 160px;
+}
+.formCard{
+    display: flex;
+}
+.middleCard{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 600px;
+}
+.upperCard{
+    display: flex;
+    justify-content: space-between;
+    margin: 0px 0px 0px 10px;
+}
+.titleCard{
+    max-width: 550px;
+    line-height: 22px;
+}
+.bottomCard{
+    display: flex;
+    justify-content: space-between;
+}
+.quantityChanges{
+    display: flex;
+}
+.favorite,
+.delete{
+    margin: auto 0;
+    color: #bebebe;
+}
+.favorite:hover{
+    color: red;
+    transition: all 0.2s;
+}
+.delete:hover{
+    color: black;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.price{
+    font-size: 28px;
+    margin: auto 0;
+}
+.inputBar {
+    width: 175px;
+    height: 35px;
+    padding: 0 5px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.inputBar[type="number"] {
+    -webkit-appearance: textfield; /* Chrome, Safari, Opera */
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield; /* Edge, IE */
+}
+
+/* Убираем стрелки для увеличения и уменьшения значения */
+.inputBar::-webkit-inner-spin-button,
+.inputBar::-webkit-outer-spin-button,
+.inputBar::-moz-inner-spin-button,
+.inputBar::-moz-outer-spin-button,
+.inputBar::-ms-inner-spin-button,
+.inputBar::-ms-outer-spin-button {
+    display: none;
+}
+.customLeftArrow{
+    color: orange;
+    background-color: transparent;
+    margin: 0px 10px 0px 10px;
+}
+.price span{
+    color: #bebebe;
+}
