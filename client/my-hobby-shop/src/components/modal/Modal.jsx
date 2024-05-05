@@ -23,8 +23,6 @@ export default function Modal({ isOpen, onClose, searchQuery, setSearchQuery }) 
                     params: { query: searchQuery }
                 });
                 setSearchResults(response.data);
-            } else {
-                setSearchResults(getFirstFourProducts());
             }
         } catch (error) {
             console.error("Error fetching data:", error);

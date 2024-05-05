@@ -10,7 +10,6 @@ export default function BrandsList() {
         const fetchData = async () => {
             try {
                 const response = await axios.get(`${process.env.API_BASE_URL}/brands`);
-                // Сортируем бренды по id и берем первые 8
                 const sortedBrands = response.data.sort((a, b) => a.id - b.id).slice(0, 8);
                 setBrands(sortedBrands);
             } catch (error) {

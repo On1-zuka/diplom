@@ -9,18 +9,18 @@ import { useState, useEffect } from 'react';
 export default function CatalogProductCard({ product, onClick}) {
     const [availability, setAvailability] = useState('');
 
-    useEffect(() => {
-        if (product.quantity_product > 0) {
-            setAvailability('В наличии');
-        } else {
-            setAvailability('Нет в наличии');
-        }
-    }, [product.quantity_product]);
+   useEffect(() => {
+    if (product.quantity_product > 0) {
+        setAvailability('В наличии');
+    } else {
+        setAvailability('Нет в наличии');
+    }
+}, [product]);
 
     return (
         <div className={styles.productCardBlock}>
             <div className={styles.imgCard}>
-                <img src={`http://localhost:5000/api/images/${product.img}`} alt="Картинка товара" className={styles.productCardImg} />
+                <img src={`${process.env.API_BASE_URL}/images/${product.img}`} alt="Картинка товара" className={styles.productCardImg} />
             </div>
             <div className={styles.content}>
                 <div className={styles.availability}>

@@ -22,8 +22,6 @@ class CartController {
             if (!userId) {
                 return next(ApiError.badRequest('Не удалось получить id пользователя из JWT'));
             }
-    
-            // Поиск или создание корзины пользователя
             let cart = await Cart.findOne({ where: { userId } });
             if (!cart) {
                 cart = await Cart.create({ userId });
@@ -96,11 +94,6 @@ class CartController {
             if (!jwtCookie) {
                 return next(ApiError.badRequest('JWT не найден в куках'));
             }
-            const { productId } = req.body;
-            const product = await Products.findByPk(productId);
-            if (!product) {
-                return next(ApiError.notFound('Товар не найден'));
-            }
             const decoded = jwt.verify(jwtCookie, process.env.SECRET_KEY);
             const userId = decoded.id;
             if (!userId) {
@@ -110,9 +103,14 @@ class CartController {
             if (!cart) {
                 return next(ApiError.notFound('Корзина не найдена'));
             }
-            const deletedCartItem = await Cart_product.destroy({
-                where: { productId, cartId: cart.id },
+            const cartItem = await Cart_product.findOne({
+                where: { cartId: cart.id, productId: req.params.productId },
             });
+            if (!cartItem) {
+                return next(ApiError.notFound('Товар не найден в корзине'));
+            }
+            await cartItem.destroy();
+    
             return res.json({ message: 'Товар успешно удален из корзины' });
         } catch (e) {
             return next(ApiError.badRequest(e.message));
@@ -124,30 +122,18 @@ class CartController {
             const { cartId, productId } = req.params;
             const { quantity } = req.body;
             const product = await Products.findByPk(productId);
-
-            // Проверяем корректность cartId, productId и quantity
             if (isNaN(cartId) || isNaN(productId) || isNaN(quantity) || quantity <= 0) {
                 return next(ApiError.badRequest('Некорректные данные'));
             }
-
-            // Находим товар в корзине
             let cartItem = await Cart_product.findOne({
                 where: { cartId, productId },
             });
-
-            // Проверяем, найден ли товар
             if (!cartItem) {
                 return next(ApiError.notFound('Карточка товара не найдена'));
             }
-
-            // Обновляем количество и стоимость товара в карточке
             cartItem.quantity = quantity;
             cartItem.price_cart = product.price * quantity;
-
-            // Сохраняем изменения
             await cartItem.save();
-
-            // Возвращаем обновленную карточку товара
             return res.json(cartItem);
         } catch (e) {
             return next(ApiError.badRequest(e.message));

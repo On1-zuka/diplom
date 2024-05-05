@@ -26,7 +26,6 @@ export default function MainProductCard() {
 
         axios.post(`${process.env.API_BASE_URL}/cart/add`, data, { withCredentials: true })
             .then(response => {
-                console.log('Товар добавлен в корзину:', response.data);
                 setShowToast(true);
                 toast.success("Товар успешно добавлен в корзину");
             })

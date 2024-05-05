@@ -7,7 +7,7 @@
 }
 .itemsReview{
     width: 810px;
-    max-height: 560px;
+    max-height: 600px;
     overflow-y: auto;
 }
 .itemsReview::-webkit-scrollbar {
