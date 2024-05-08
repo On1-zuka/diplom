@@ -17,8 +17,31 @@ export default function MainProductCard() {
     const [maxQuantity, setMaxQuantity] = useState(product ? product.quantity_product : 1);
     const [totalPrice, setTotalPrice] = useState(product ? product.price : 0);
     const [showToast, setShowToast] = useState(false);
+    const [cartItems, setCartItems] = useState([]);
+    const [totalCartQuantity, setTotalCartQuantity] = useState(0);
+
+    useEffect(() => {
+        axios.get(`${process.env.API_BASE_URL}/cart`, { withCredentials: true })
+            .then(response => {
+                setCartItems(response.data);
+                const totalQuantity = response.data.reduce((acc, item) => acc + item.quantity, 0);
+                setTotalCartQuantity(totalQuantity);
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке корзины:', error);
+            });
+    }, []);
 
     const handleAddToCart = () => {
+        const existingItem = cartItems.find(item => item.productId === id);
+        const cartQuantity = existingItem ? existingItem.quantity : 0;
+        const totalQuantity = totalCartQuantity + inputQuantity;
+
+        if (totalQuantity > maxQuantity) {
+            toast.error('Превышено максимальное количество товаров в корзине');
+            return;
+        }
+
         const data = {
             productId: id,
             quantity: inputQuantity,
@@ -28,6 +51,8 @@ export default function MainProductCard() {
             .then(response => {
                 setShowToast(true);
                 toast.success("Товар успешно добавлен в корзину");
+                setCartItems(prevItems => [...prevItems, data]);
+                setTotalCartQuantity(totalQuantity);
             })
             .catch(error => {
                 console.error('Ошибка при добавлении товара в корзину:', error);
@@ -41,6 +66,7 @@ export default function MainProductCard() {
             .then(response => {
                 setProduct(response.data);
                 setTotalPrice(response.data.price);
+                setMaxQuantity(response.data.quantity_product);
             })
             .catch(error => {
                 console.error('Ошибка при загрузке данных:', error);
@@ -55,13 +81,6 @@ export default function MainProductCard() {
         }
     }, [product]);
 
-    useEffect(() => {
-        if (product) {
-            setMaxQuantity(product.quantity_product);
-        }
-    }, [product]);
-
-
     const handleIncrement = () => {
         if (inputQuantity < maxQuantity) {
             setInputQuantity(prevQuantity => Math.min(prevQuantity + 1, maxQuantity));
@@ -72,20 +91,26 @@ export default function MainProductCard() {
     const handleDecrement = () => {
         if (inputQuantity > 1) {
             setInputQuantity(prevQuantity => prevQuantity - 1);
-            setTotalPrice((prevPrice) => prevPrice - product.price);
+            setTotalPrice(prevPrice => prevPrice - product.price);
         }
     };
 
     const handleInputChange = (e) => {
         const newValue = parseInt(e.target.value);
-        const updatedValue = isNaN(newValue) ? 0 : Math.min(newValue, maxQuantity);
+        if (isNaN(newValue) || newValue <= 0) {
+            return;
+        }
+        const updatedValue = Math.min(newValue, maxQuantity);
         setInputQuantity(updatedValue);
-        setTotalPrice(updatedValue * product.price); // Обновление цены при изменении количества через инпут
+        setTotalPrice(updatedValue * product.price);
     };
+
+    
 
     if (!product) {
         return <div>Loading...</div>;
     }
+
 
     return (
         <main className={styles.main}>

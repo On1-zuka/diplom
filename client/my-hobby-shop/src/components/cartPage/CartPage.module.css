@@ -69,6 +69,27 @@
     font-size: 16px;
     cursor: pointer;
 }
+.choice{
+    display: flex;
+    align-items: center;
+}
+.choice input[type="radio"] {
+    margin-right: 5px;
+}
+.choice label {
+    margin-left: 5px;
+}
+.dateTime{
+    margin: 0px 0px 0px 10px;
+}
+.time,
+.date{
+    margin: 0px 0px 0px 15px;
+    padding: 5px;
+    border: 1px solid #bebebe;
+    font-size: 14px;
+    border-radius: 10px;
+}
 .payReceipt,
 .pointHome{
     margin: 0px 0px 15px 0px;

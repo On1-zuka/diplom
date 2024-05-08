@@ -11,14 +11,10 @@ export default function CartPage() {
     const [productCard, setProductCard] = useState([]);
     const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState('');
     const [totalPrice, setTotalPrice] = useState(0);
+    const [deliveryMethod, setDeliveryMethod] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [selectedDate, setSelectedDate] = useState('');
 
-    const handleDivClickPay = useCallback((method) => {
-        setSelectedPaymentMethod(method);
-    }, []);
-
-    const handleDivClickDelivery = useCallback((method) => {
-        setSelectedDeliveryMethod(method);
-    }, []);
 
     const [userData, setUserData] = useState({
         id: '',
@@ -35,11 +31,6 @@ export default function CartPage() {
         setUserData({ ...userData, [field]: value });
     };
 
-    const handlePayment = () => {
-        if (selectedPaymentMethod === 'receipt') {
-        } else if (selectedPaymentMethod === 'card') {
-        }
-    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -94,6 +85,52 @@ export default function CartPage() {
         setTotalPrice(calculateTotalPrice);
     }, [calculateTotalPrice]);
 
+    const handleDivClickDelivery = (method) => {
+        setDeliveryMethod(method);
+    };
+
+    const handleDivClickPay = (method) => {
+        setPaymentMethod(method);
+    };
+
+    const handlePayment = () => {
+        // Логика для обработки оплаты
+    };
+
+    const getNextDay = () => {
+        const currentDate = new Date();
+        let nextDay = new Date(currentDate);
+        nextDay.setDate(currentDate.getDate() + 1);
+        if (nextDay.getDay() === 0) {
+            nextDay.setDate(currentDate.getDate() + 2);
+        }  
+        return nextDay.toISOString().split('T')[0];
+    };
+    
+    const getNextFiveDays = () => {
+        const currentDate = new Date();
+        let nextFiveDays = new Date(currentDate);
+        let count = 0;
+        while (count < 5) {
+            nextFiveDays.setDate(nextFiveDays.getDate() + 1);
+            if (nextFiveDays.getDay() !== 0) {
+                count++;
+            }
+        }
+    
+        return nextFiveDays.toISOString().split('T')[0];
+    };
+
+    const handleDateChange = (e) => {
+        const selected = new Date(e.target.value);
+        if (selected.getDay() === 0) { // Если выбрана дата - воскресенье
+            alert('Выберите другой день, воскресенье недоступно!');
+            setSelectedDate(''); // Сбрасываем выбранную дату
+        } else {
+            setSelectedDate(e.target.value);
+        }
+    };
+
     return (
         <div className={styles.dataMenu}>
             <div className={styles.headerDataMenu}>
@@ -105,13 +142,14 @@ export default function CartPage() {
                     <div className={styles.itemsReview}>
                         {productCard.map((product) => (
                             <CartProductCard key={product.id}
-                                product={product}
+                                product={{ ...product, price: product.product.price }}
                                 productId={product.id}
-                                calculateTotalPrice={calculateTotalPrice}
-                                updateProductList={updateProductList} />
+                                updateProductList={updateProductList}
+                                updateTotalPrice={setTotalPrice}
+                            />
                         ))}
                     </div>
-                    <div className={styles.priceProduct}>Обшая сумма товаров: <span>{totalPrice} р</span></div>
+                    <div className={styles.priceProduct}>Обшая сумма товаров: <span>{totalPrice.toFixed(2)} р</span></div>
                 </div>
                 <form action='' className={styles.userData}>
                     <div className={styles.pointTwo}>
@@ -120,87 +158,100 @@ export default function CartPage() {
                             <div className={styles.inputBox}>
                                 <p>Имя</p>
                                 <input type="text" placeholder="Имя" value={userData.name} readOnly
-                                onChange={(e) => handleUserDataChange('name', e.target.value)} />
+                                    onChange={(e) => handleUserDataChange('name', e.target.value)} />
                             </div>
                             <div className={styles.inputBox}>
                                 <p>Фамилия</p>
                                 <input type="text" placeholder="Фамилия" value={userData.surname} readOnly
-                                onChange={(e) => handleUserDataChange('surname', e.target.value)} />
+                                    onChange={(e) => handleUserDataChange('surname', e.target.value)} />
                             </div>
                             <div className={styles.inputBox}>
                                 <p>Отчество</p>
                                 <input type="text" placeholder="Отчество" value={userData.patronymic} readOnly
-                                onChange={(e) => handleUserDataChange('patronymic', e.target.value)} />
+                                    onChange={(e) => handleUserDataChange('patronymic', e.target.value)} />
                             </div>
                             <div className={styles.inputBox}>
                                 <p>Номер телефона</p>
                                 <input type="text" placeholder="Номер телефона" value={userData.phone} readOnly
-                                onChange={(e) => handleUserDataChange('phone', e.target.value)} />
+                                    onChange={(e) => handleUserDataChange('phone', e.target.value)} />
                             </div>
                             <div className={styles.inputBox}>
                                 <p>Адрес</p>
                                 <input type="text" placeholder="Адрес" value={userData.address} readOnly
-                                onChange={(e) => handleUserDataChange('address', e.target.value)} />
+                                    onChange={(e) => handleUserDataChange('address', e.target.value)} />
                             </div>
                             <div className={styles.inputBox}>
                                 <p>Email</p>
                                 <input type="text" placeholder="Email" value={userData.email} readOnly
-                                onChange={(e) => handleUserDataChange('email', e.target.value)} />
+                                    onChange={(e) => handleUserDataChange('email', e.target.value)} />
                             </div>
                         </div>
                         <div className={styles.forUser}>*Для редактирования данных, зайдите в профиль</div>
                     </div>
+
                     <div className={styles.titlePoint}>3. Способ доставки</div>
-                    <div className={styles.pointHome}>
+                    <div className={styles.pointHome} onClick={() => handleDivClickDelivery('courier')}>
                         <div className={styles.choice}>
                             <input type="radio" className={styles.way}
                                 name="deliveryMethod"
-                                onClick={() => handleDivClickDelivery('courier')} />
+                                checked={deliveryMethod === 'courier'}
+                                onChange={() => { }} />
                             Курьер доставит товар по вашему адресу
+                            <div className={styles.dateTime}>
+                                <input type="date" className={styles.date} 
+                                min={getNextDay()}
+                                max={getNextFiveDays()}
+                                onChange={(e) => setSelectedDate(e.target.value)}/>
+                                <input type="time" className={styles.time} />
+                            </div>
                         </div>
                         10.0 р
                     </div>
-                    <div className={styles.pointShop}>
+                    <div className={styles.pointShop} onClick={() => handleDivClickDelivery('pickup')}>
                         <div className={styles.choice}>
                             <input type="radio" className={styles.way}
                                 name="deliveryMethod"
-                                onClick={() => handleDivClickDelivery('pickup')} />
+                                checked={deliveryMethod === 'pickup'}
+                                onChange={() => { }} />
                             Забрать из магазина
                         </div>
                         Бесплатно
                     </div>
-                    <div className={styles.four}>
-                        <div className={styles.titlePoint}>4. Способ оплаты</div>
-                        <div className={styles.payMethod}>
-                            <div className={styles.payReceipt} onClick={() => handleDivClickPay('receipt')}>
-                                <input type="radio" className={styles.way}
-                                    name="paymentMethod" />
-                                Оплата при получении
-                            </div>
-                            <div className={styles.payCard} onClick={() => handleDivClickPay('card')}>
-                                <input type="radio" className={styles.way}
-                                    name="paymentMethod" />
-                                Оплата картой
-                                <img src={visa} alt="Виза" className={styles.visaCard} />
-                                <img src={master} alt="Мастер кард" className={styles.masterCard} />
 
-                                <div className={styles.dataCart}>
-                                    <div className={styles.inputBox}>
-                                        <p>Номер карты</p>
-                                        <input type="text" placeholder="0000 0000 0000 0000" />
-                                    </div>
-                                    <div className={styles.bottomCard}>
-                                        <div className={styles.inputBoxDate}>
-                                            <p>Дата</p>
-                                            <input type="text" placeholder="00/00" />
-                                        </div>
-                                        <div className={styles.inputBoxCvc}>
-                                            <p>CVC</p>
-                                            <input type="text" placeholder="000" />
-                                        </div>
-                                    </div>
-                                    <button className={styles.payButton} onClick={handlePayment}>Оплатить: {totalPrice.toFixed(2)} р</button>
+                    <div className={styles.titlePoint}>4. Способ оплаты</div>
+                    <div className={styles.payMethod}>
+                        <div className={styles.payReceipt} onClick={() => handleDivClickPay('receipt')}>
+                            <input type="radio" className={styles.way}
+                                name="paymentMethod"
+                                checked={paymentMethod === 'receipt'}
+                                onChange={() => { }} />
+                            Оплата при получении
+                        </div>
+                        <div className={styles.payCard} onClick={() => handleDivClickPay('card')}>
+                            <input type="radio" className={styles.way}
+                                name="paymentMethod"
+                                checked={paymentMethod === 'card'}
+                                onChange={() => { }} />
+                            Оплата картой
+                            <img src={visa} alt="Виза" className={styles.visaCard} />
+                            <img src={master} alt="Мастер кард" className={styles.masterCard} />
+
+                            <div className={styles.dataCart}>
+                                <div className={styles.inputBox}>
+                                    <p>Номер карты</p>
+                                    <input type="text" placeholder="0000 0000 0000 0000" />
                                 </div>
+                                <div className={styles.bottomCard}>
+                                    <div className={styles.inputBoxDate}>
+                                        <p>Дата</p>
+                                        <input type="text" placeholder="00/00" />
+                                    </div>
+                                    <div className={styles.inputBoxCvc}>
+                                        <p>CVC</p>
+                                        <input type="text" placeholder="000" />
+                                    </div>
+                                </div>
+                                <button className={styles.payButton} onClick={handlePayment}>Оплатить: {totalPrice.toFixed(2)} р</button>
                             </div>
                         </div>
                     </div>

@@ -37,6 +37,12 @@
 .quantityChanges{
     display: flex;
 }
+.quantity p{
+    padding: 0px 0px 0px 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: red;
+}
 .favorite,
 .delete{
     margin: auto 0;
@@ -72,13 +78,10 @@
 }
 
 /* Убираем стрелки для увеличения и уменьшения значения */
-.inputBar::-webkit-inner-spin-button,
-.inputBar::-webkit-outer-spin-button,
-.inputBar::-moz-inner-spin-button,
-.inputBar::-moz-outer-spin-button,
-.inputBar::-ms-inner-spin-button,
-.inputBar::-ms-outer-spin-button {
-    display: none;
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 .customLeftArrow{
     color: orange;
