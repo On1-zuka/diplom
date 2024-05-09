@@ -24,6 +24,19 @@
     background-color: orange;
     border-radius: 4px;
 }
+.cartEmpty{
+    margin: 50px;
+    text-align: center;
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 50px;
+}
+.cartEmpty span{
+    display: block;
+    font-size: 26px;
+    width: 800px;
+    font-weight: 500;
+}
 .priceProduct{
     margin: 10px 0px 0px 0px;
     font-size: 18px;
@@ -81,10 +94,18 @@
 }
 .dateTime{
     margin: 0px 0px 0px 10px;
+    display: flex;
 }
-.time,
+
 .date{
-    margin: 0px 0px 0px 15px;
+    margin: 0px 0px 0px 45px;
+    padding: 5px;
+    border: 1px solid #bebebe;
+    font-size: 14px;
+    border-radius: 10px;
+}
+.time{
+    margin: 0px 65px 0px 20px;
     padding: 5px;
     border: 1px solid #bebebe;
     font-size: 14px;
@@ -94,6 +115,7 @@
 .pointHome{
     margin: 0px 0px 15px 0px;
 }
+.payCard,
 .payReceipt{
     display: flex;
     align-items: center;
@@ -105,55 +127,18 @@
     font-size: 16px;
     cursor: pointer;
 }
-.payCard{
-    width: 395px;
-    border: 1px solid #bebebe;
-    border-radius: 10px;
-    padding: 21px 10px;
-    font-size: 16px;
-    cursor: pointer;
+.payMethod input[type="radio"] {
+    margin-right: 5px;
 }
-.visaCard,
-.masterCard{
-    height: 26px;
-    width: 48px;
-    margin: 0px 0px 0px 10px;
-}
-.dataCart{
-    margin-top: 10px;
-}
-.bottomCard{
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-.inputBoxDate input{
-    height: 53px;
-    width: 180px;
-    border: 1px solid #bebebe;
-    border-radius: 10px;
-    padding: 0px 10px;
-    font-size: 16px;
-}
-.inputBoxCvc input{
-    height: 53px;
-    width: 142px;
-    border: 1px solid #bebebe;
-    border-radius: 10px;
-    padding: 0px 10px;
-    font-size: 16px;
-}
-.inputBoxDate p,
-.inputBoxCvc p{
-    margin: 0px 0px 10px 0px;
-    font-size: 16px;
+.payMethod label {
+    margin-left: 5px;
 }
 .payButton{
     height: 53px;
     background-color: orange;
     color: white;
     border-radius: 10px;
-    width: 100%;
+    width: 395px;
     margin-top: 20px;
     font-size: 20px;
 }

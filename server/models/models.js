@@ -16,8 +16,10 @@ const User = sequelize.define('user', {
 const Cart = sequelize.define('cart', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     status: { type: DataTypes.INTEGER },
-    orderTime: { type: DataTypes.DATE },
+    orderDate: { type: DataTypes.DATE },
     pickup: { type: BOOLEAN },
+    orderTime:{ type: DataTypes.STRING},
+    finalPrice: {type: DataTypes.INTEGER}
 })
 
 const Cart_product = sequelize.define('cart_product', {
