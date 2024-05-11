@@ -65,25 +65,6 @@ class UserController {
             return next(ApiError.internal('Внутренняя ошибка сервера'));
         }
     }
-    // async check(req, res, next) {
-    //     try {
-    //         const token = req.headers.authorization.split(' ')[1];
-    //         if (!token) {
-    //             return next(ApiError.unauthorized('Токен не предоставлен'));
-    //         }
-    //         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    //         const userId = decodedToken.id;
-
-    //         const user = await User.findByPk(userId);
-    //         if (!user) {
-    //             return next(ApiError.unauthorized('Пользователь не найден'));
-    //         }
-    //         const newToken = jwt.sign({ id: user.id }, process.env.SECRET_KEY, { expiresIn: '24h' });
-    //         return res.json({ token: newToken });
-    //     } catch (err) {
-    //         return next(ApiError.unauthorized('Невалидный токен'));
-    //     }
-    // }
     async profile(req, res, next) {
         try {
             // Получаем токен из cookies
@@ -110,6 +91,14 @@ class UserController {
             }
             // Отправляем данные пользователя клиенту
             return res.json({ user });
+        } catch (err) {
+            return next(ApiError.internal('Внутренняя ошибка сервера'));
+        }
+    }
+    async logout(req, res, next) {
+        try {
+            res.clearCookie('token', { domain: 'localhost' });
+            return res.json({ message: 'Выход выполнен успешно' });
         } catch (err) {
             return next(ApiError.internal('Внутренняя ошибка сервера'));
         }

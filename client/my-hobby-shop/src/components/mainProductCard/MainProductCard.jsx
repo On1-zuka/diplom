@@ -19,29 +19,8 @@ export default function MainProductCard() {
     const [showToast, setShowToast] = useState(false);
     const [cartItems, setCartItems] = useState([]);
     const [totalCartQuantity, setTotalCartQuantity] = useState(0);
-
-    useEffect(() => {
-        axios.get(`${process.env.API_BASE_URL}/cart`, { withCredentials: true })
-            .then(response => {
-                setCartItems(response.data);
-                const totalQuantity = response.data.reduce((acc, item) => acc + item.quantity, 0);
-                setTotalCartQuantity(totalQuantity);
-            })
-            .catch(error => {
-                console.error('Ошибка при загрузке корзины:', error);
-            });
-    }, []);
-
+    
     const handleAddToCart = () => {
-        const existingItem = cartItems.find(item => item.productId === id);
-        const cartQuantity = existingItem ? existingItem.quantity : 0;
-        const totalQuantity = totalCartQuantity + inputQuantity;
-
-        if (totalQuantity > maxQuantity) {
-            toast.error('Превышено максимальное количество товаров в корзине');
-            return;
-        }
-
         const data = {
             productId: id,
             quantity: inputQuantity,
@@ -52,7 +31,7 @@ export default function MainProductCard() {
                 setShowToast(true);
                 toast.success("Товар успешно добавлен в корзину");
                 setCartItems(prevItems => [...prevItems, data]);
-                setTotalCartQuantity(totalQuantity);
+                setTotalCartQuantity(prevQuantity => prevQuantity + inputQuantity);
             })
             .catch(error => {
                 console.error('Ошибка при добавлении товара в корзину:', error);
@@ -105,12 +84,9 @@ export default function MainProductCard() {
         setTotalPrice(updatedValue * product.price);
     };
 
-    
-
     if (!product) {
         return <div>Loading...</div>;
     }
-
 
     return (
         <main className={styles.main}>

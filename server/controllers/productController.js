@@ -69,17 +69,19 @@ class ProductController {
             limit = limit || 9;
             const offset = page * limit - limit;
             let product;
-
+        
             if (!brandId && !categoryId) {
                 product = await Products.findAndCountAll({ limit, offset });
             } else if (brandId && !categoryId) {
                 product = await Products.findAndCountAll({ where: { brandId }, limit, offset });
             } else if (!brandId && categoryId) {
-                product = await Products.findAndCountAll({ where: { categoryId }, limit, offset });
+                const categoryIdArray = categoryId.split(',').map(Number);
+                product = await Products.findAndCountAll({ where: { categoryId: categoryIdArray }, limit, offset });
             } else if (brandId && categoryId) {
-                product = await Products.findAndCountAll({ where: { categoryId, brandId }, limit, offset });
+                const categoryIdArray = categoryId.split(',').map(Number);
+                product = await Products.findAndCountAll({ where: { categoryId: categoryIdArray, brandId }, limit, offset });
             }
-
+        
             return res.json(product);
         } catch (e) {
             return next(ApiError.badRequest("Ошибка сервера"));

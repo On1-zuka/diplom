@@ -72,7 +72,7 @@ class CartController {
                 include: [
                     {
                         model: Products,
-                        attributes: ['name', 'img', 'quantity_product', 'price'],
+                        attributes: ['id','name', 'img', 'quantity_product', 'price'],
                     },
                 ],
             });

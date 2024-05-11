@@ -4,6 +4,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
 import { useState, useEffect } from "react";
 import axios from 'axios';
 
@@ -18,7 +19,7 @@ export default function SelectionMenu(){
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/users/profile`, {
+                const response = await axios.get(`${process.env.API_BASE_URL}/users/profile`, {
                     withCredentials: true,
                 });
                 const user = response.data.user;
@@ -33,6 +34,26 @@ export default function SelectionMenu(){
         };
         fetchData();
     }, []);
+
+    const logout = async () => {
+        try {
+            await axios.post(`${process.env.API_BASE_URL}/users/logout`, null, {
+                withCredentials: true,
+            });
+            toast.success('Вы успешно вышли из аккаунта!', {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            navigate('/');
+        } catch (error) {
+            toast.error('Ошибка при выходе из аккаунта:');
+        }
+    };
 
     return (
         <div className={styles.main}>
@@ -49,9 +70,10 @@ export default function SelectionMenu(){
                                     <li onClick={()=>navigate('/menu/profile')}><PersonIcon />Мой профиль </li>
                                     <li onClick={()=>navigate('/menu/cart')}><ShoppingCartIcon />Корзина</li>
                                     <li><FavoriteIcon />Избранное</li>
-                                    <li><ExitToAppIcon />Выход из аккаунта</li>
+                                    <li onClick={logout}><ExitToAppIcon />Выход из аккаунта</li>
                                 </ul>
                             </div>
+                            <ToastContainer />
                         </div>
                     </div>
                     <Outlet/>

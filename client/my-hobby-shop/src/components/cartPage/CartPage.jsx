@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import visa from '../../assets/card/visa.png';
-import master from '../../assets/card/master-card.png';
 import CartProductCard from '../cartProductCard/CartProductCard';
 import axios from 'axios';
-
+import { ToastContainer, toast } from 'react-toastify';
 import styles from './CartPage.module.css';
 
 export default function CartPage() {
@@ -95,24 +93,37 @@ export default function CartPage() {
         setSelectedTime(timeString);
     };
 
-    const handlePayment = async (event) => {
-        event.preventDefault();
-        const orderData = {
-            orderDate: selectedDate,
-            pickup: deliveryMethod === 'courier',
-            orderTime: selectedTime,
-            finalPrice: totalPrice.toFixed(2)
-        };
+        const handlePayment = async (event) => {
+            event.preventDefault();
+            if (deliveryMethod !== 'courier' && deliveryMethod !== 'pickup') {
+                toast.error('Выберите способ доставки');
+                return;
+            }
 
-        try {
-            const response = await axios.post(`${process.env.API_BASE_URL}/order/create-order`, orderData, { withCredentials: true });
-            console.log('Order submitted successfully:', response.data);
-            // Здесь можно добавить логику для перехода на страницу подтверждения заказа или что-то подобное
-        } catch (error) {
-            console.error('Error submitting order:', error);
-            // Здесь можно добавить логику для обработки ошибки при оформлении заказа
-        }
-    };
+            if (deliveryMethod === 'courier' && (!selectedDate || !selectedTime)) {
+                toast.error('Выберите дату и время для доставки');
+                return;
+            }
+        
+            if (paymentMethod !== 'receipt' && paymentMethod !== 'card') {
+                toast.error('Выберите способ оплаты');
+                return;
+            }
+            
+            const orderData = {
+                orderDate: selectedDate,
+                pickup: deliveryMethod === 'courier',
+                orderTime: selectedTime,
+                finalPrice: totalPrice.toFixed(2)
+            };
+
+            try {
+                const response = await axios.post(`${process.env.API_BASE_URL}/order/create-order`, orderData, { withCredentials: true });
+                console.log('Order submitted successfully:', response.data);
+            } catch (error) {
+                console.error('Error submitting order:', error);
+            }
+        };
 
     const getNextDay = () => {
         const currentDate = new Date();
@@ -134,7 +145,6 @@ export default function CartPage() {
                 count++;
             }
         }
-
         return nextFiveDays.toISOString().split('T')[0];
     };
 
@@ -145,8 +155,8 @@ export default function CartPage() {
             </div>
             {cartEmpty ? (
                 <div className={styles.cartEmpty}>Корзина пуста
-                <br/>
-                <span>Загляните в каталог или воспользуйтесь поиском, чтобы найти нужные товары.</span></div>
+                    <br />
+                    <span>Загляните в каталог или воспользуйтесь поиском, чтобы найти нужные товары.</span></div>
             ) : (
                 <div className={styles.pointsShop}>
                     <div className={styles.pointOne}>
@@ -244,7 +254,6 @@ export default function CartPage() {
                                 </div>
                                 Бесплатно
                             </div>
-
                             <div className={styles.titlePoint}>4. Способ оплаты</div>
                             <div className={styles.payMethod}>
                                 <div className={styles.payReceipt} onClick={() => handleDivClickPay('receipt')}>
@@ -260,7 +269,6 @@ export default function CartPage() {
                                         checked={paymentMethod === 'card'}
                                         onChange={() => { }} />
                                     Оплата картой при получении
-
                                 </div>
                                 <button className={styles.payButton} onClick={handlePayment}>Завершить оформление</button>
                             </div>
@@ -270,5 +278,4 @@ export default function CartPage() {
             )}
         </div>
     );
-
 }

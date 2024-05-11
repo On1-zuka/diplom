@@ -27,8 +27,8 @@ export default function CatalogPage() {
         try {
             const response = await axios.get(`${process.env.API_BASE_URL}/products`, {
                 params: {
-                    brandId: "",
-                    categoryId: "",
+                    brandId: selectedBrands.join(','), // Преобразуйте массив в строку для brandId
+                    categoryId: selectedCategories.join(','), // Преобразуйте массив в строку для categoryId
                     limit,
                     page,
                 },
@@ -39,7 +39,6 @@ export default function CatalogPage() {
             console.error('Error fetching data:', error);
         }
     };
-
     const fetchCategories = async () => {
         try {
             const response = await axios.get(`${process.env.API_BASE_URL}/categories`);
@@ -90,6 +89,24 @@ export default function CatalogPage() {
     const handlePaginationChange = (event, value) => {
         setPage(value);
     };
+
+    const handleCategoryChange = (category) => {
+        const updatedCategories = selectedCategories.includes(category)
+            ? selectedCategories.filter((cat) => cat !== category)
+            : [...selectedCategories, category];
+        setSelectedCategories(updatedCategories);
+    };
+
+    const handleBrandChange = (brand) => {
+        const updatedBrands = selectedBrands.includes(brand)
+            ? selectedBrands.filter((br) => br !== brand)
+            : [...selectedBrands, brand];
+        setSelectedBrands(updatedBrands);
+    };
+
+    const applyFilters = () => {
+        fetchData();
+    };
     return (
         <div>
             <main className={styles.catalogPage}>
@@ -103,7 +120,9 @@ export default function CatalogPage() {
                                         <p className={styles.selectName}>Категории</p>
                                         <div className={styles.list}>
                                             {categories.map(category => (
-                                                <Checkbox key={category.id} label={category.name} />
+                                                <Checkbox key={category.id} label={category.name}
+                                                    checked={selectedCategories.includes(category.id)}
+                                                    onChange={() => handleCategoryChange(category.id)} />
                                             ))}
                                         </div>
                                     </div>
@@ -111,7 +130,9 @@ export default function CatalogPage() {
                                         <p className={styles.selectName}>Бренды</p>
                                         <div className={styles.list}>
                                             {brands.map(brand => (
-                                                <Checkbox key={brand.id} label={brand.name} />
+                                                <Checkbox key={brand.id} label={brand.name}
+                                                    checked={selectedBrands.includes(brand.id)}
+                                                    onChange={() => handleBrandChange(brand.id)} />
                                             ))}
                                         </div>
                                     </div>
@@ -142,7 +163,8 @@ export default function CatalogPage() {
                                         <input type="number" className={styles.minPrice} />
                                         <input type="number" className={styles.maxPrice} />
                                     </div>
-                                    <button className={styles.applyFilter}>Применить фильтры</button>
+                                    <button type='button' className={styles.applyFilter} onClick={applyFilters}>
+                                        Применить фильтры</button>
                                 </div>
                             </div>
                             <div className={styles.catalogPanel}>
@@ -162,9 +184,13 @@ export default function CatalogPage() {
                                     </select>
                                 </div>
                                 <div className={styles.content}>
-                                    {sortedProducts().map(product => (
-                                        <CatalogProductCard key={product.id} product={product} />
-                                    ))}
+                                    {products.length > 0 ? (
+                                        sortedProducts().map(product => (
+                                            <CatalogProductCard key={product.id} product={product} />
+                                        ))
+                                    ) : (
+                                        <p className={styles.noProducts}>Нет доступных товаров</p>
+                                    )}
                                 </div>
                                 <div className={styles.pagination}>
                                     <Pagination

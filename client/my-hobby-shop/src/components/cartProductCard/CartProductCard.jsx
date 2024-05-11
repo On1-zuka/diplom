@@ -4,6 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import { ToastContainer, toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
@@ -72,19 +73,19 @@ export default function CartProductCard({ product, productId, updateProductList,
     };
     
     const handleChangeQuantity = (e) => {
-        const value = e.target.value;
-        if (/^\d*$/.test(value)) {
-            const newValue = value === '' ? '' : Math.min(parseInt(value), maxQuantity);
-            if (newValue > 0) {
-                setInputQuantity(newValue);
-                setDisplayQuantity(newValue);
-                calculateTotalPrice(newValue);
-                updateTotalPrice(product.product.price * newValue);
-            } else {
-                return;
-            }
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+        const newValue = value === '' ? '' : Math.min(parseInt(value), product.product.quantity);
+        if (newValue > 0) {
+            setInputQuantity(newValue);
+            setDisplayQuantity(newValue);
+            calculateTotalPrice(newValue);
+            updateTotalPrice(product.product.price * newValue);
+        } else {
+            return;
         }
-    };
+    }
+};
 
     const updateQuantityOnServer = (newQuantity) => {
         axios.patch(`${process.env.API_BASE_URL}/cart/update/${product.productId}`, {
@@ -101,7 +102,9 @@ export default function CartProductCard({ product, productId, updateProductList,
             </div>
             <div className={styles.middleCard}>
                 <div className={styles.upperCard}>
-                    <div className={styles.titleCard}>{product.product.name}</div>
+                    <Link to={`/menu/cart/product/${product.product.id}`} className={styles.titleCard}>
+                        <p className={styles.titleText}>{product.product.name}</p>
+                    </Link>
                     <FavoriteBorderIcon className={styles.favorite} />
                 </div>
                 {product.quantity > maxQuantity && (

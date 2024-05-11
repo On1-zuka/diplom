@@ -1,22 +1,40 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './CatalogProductCard.module.css';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { useState, useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
 
-export default function CatalogProductCard({ product, onClick}) {
+export default function CatalogProductCard({ product }) {
     const [availability, setAvailability] = useState('');
+    const [showToast, setShowToast] = useState(false);
 
-   useEffect(() => {
-    if (product.quantity_product > 0) {
-        setAvailability('В наличии');
-    } else {
-        setAvailability('Нет в наличии');
+    useEffect(() => {
+        if (product.quantity_product > 0) {
+            setAvailability('В наличии');
+        } else {
+            setAvailability('Нет в наличии');
+        }
+    }, [product]);
+
+    const handleAddToCart = () => {
+        const data = {
+            productId: product.id,
+            quantity: 1,
+        };
+
+        axios.post(`${process.env.API_BASE_URL}/cart/add`, data, { withCredentials: true })
+            .then(response => {
+                setShowToast(true);
+                toast.success("Товар успешно добавлен в корзину");
+            })
+            .catch(error => {
+                setShowToast(false);
+                toast.error("Упс, что-то пошло не так");
+            });
     }
-}, [product]);
-
     return (
         <div className={styles.productCardBlock}>
             <div className={styles.imgCard}>
@@ -30,7 +48,7 @@ export default function CatalogProductCard({ product, onClick}) {
                         <div className={styles.closeProduct}><CloseIcon />{availability}</div>
                     )}
                     <div className={styles.favorite}>
-                        <FavoriteBorderIcon className={styles.favoriteIcon}/> <span>В избранное</span>
+                        <FavoriteBorderIcon className={styles.favoriteIcon} /> <span>В избранное</span>
                     </div>
                 </div>
                 <Link to={`/catalog/product/${product.id}`} className={styles.nameProductLink}>
@@ -40,8 +58,13 @@ export default function CatalogProductCard({ product, onClick}) {
             </div>
             <div className={styles.priceAndButton}>
                 <p>{product.price} р.</p>
-                <button className={styles.cart}>В корзину</button>
+                <button type="button" className={`${styles.cart} ${product.quantity_product <= 0 ? styles.disabledButton : ''}`}
+                    disabled={product.quantity_product <= 0} onClick={handleAddToCart}>
+                    В корзину
+                </button>
+                
             </div>
+            <ToastContainer />
         </div>
     );
 }

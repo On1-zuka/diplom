@@ -21,6 +21,14 @@
     justify-content: space-between;
     width: 600px;
 }
+.titleText{
+    font-size: 18px;
+    font-weight: 400;
+}
+.titleText:hover{
+    text-decoration: underline;
+    line-height: 21px;
+}
 .upperCard{
     display: flex;
     justify-content: space-between;

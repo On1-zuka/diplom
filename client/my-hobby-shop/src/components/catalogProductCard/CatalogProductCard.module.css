@@ -84,3 +84,8 @@
     color: white;
     margin: 0px 0px 45px 0px;
 }
+.disabledButton{
+    background-color: #F5F5F5;
+    color: black;
+    cursor: default;
+}
