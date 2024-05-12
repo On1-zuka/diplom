@@ -7,7 +7,8 @@ import Checkbox from '../../common/checkboxWithText/checkbox';
 
 export default function CatalogPage() {
     const [products, setProducts] = useState([]);
-    const [priceRange, setPriceRange] = useState([0, 100]);
+    const [maxPrice, setMaxPrice] = useState(100);
+    const [priceRange, setPriceRange] = useState([0, maxPrice]);
     const [sortOption, setSortOption] = useState("");
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(5);
@@ -21,16 +22,19 @@ export default function CatalogPage() {
         fetchData();
         fetchCategories();
         fetchBrands();
+        fetchMaxPrice();
     }, [page, limit, sortOption]);
 
     const fetchData = async () => {
         try {
             const response = await axios.get(`${process.env.API_BASE_URL}/products`, {
                 params: {
-                    brandId: selectedBrands.join(','), // Преобразуйте массив в строку для brandId
-                    categoryId: selectedCategories.join(','), // Преобразуйте массив в строку для categoryId
+                    brandId: selectedBrands.join(','),
+                    categoryId: selectedCategories.join(','),
                     limit,
                     page,
+                    minPrice: priceRange[0],
+                    maxPrice: priceRange[1],
                 },
             });
             setProducts(response.data.rows);
@@ -57,10 +61,22 @@ export default function CatalogPage() {
         }
     };
 
+    const fetchMaxPrice = async () => {
+        try {
+            const response = await axios.get(`${process.env.API_BASE_URL}/products/max-price`);
+            const maxPriceValue = response.data;
+            if (maxPriceValue) {
+                setMaxPrice(maxPriceValue);
+            } else {
+                console.error('Max price not found in response');
+            }
+        } catch (error) {
+            console.error('Error fetching max price:', error);
+        }
+    };
+
     const handlePriceSliderChange = (event, newValue) => {
         setPriceRange(newValue);
-        // Дополнительные действия при изменении диапазона цен ь
-
     };
 
     const handleSortChange = (event) => {
@@ -107,6 +123,16 @@ export default function CatalogPage() {
     const applyFilters = () => {
         fetchData();
     };
+
+    const handleMinPriceChange = (e) => {
+        const minPrice = parseInt(e.target.value);
+        setPriceRange([minPrice, priceRange[1]]);
+    };
+
+    const handleMaxPriceChange = (e) => {
+        const maxPriceValue = parseFloat(e.target.value);
+        setMaxPrice(maxPriceValue);
+    };
     return (
         <div>
             <main className={styles.catalogPage}>
@@ -115,7 +141,7 @@ export default function CatalogPage() {
                         <form action="" className={styles.fromCatalog}>
                             <div className={styles.filter}>
                                 <div className={styles.filterCategory}>
-                                    <button className={styles.hideFilter}>Сбросить фильтр(ы) </button>
+                                    <button type="reset" className={styles.hideFilter} >Сбросить фильтр(ы) </button>
                                     <div className={styles.category}>
                                         <p className={styles.selectName}>Категории</p>
                                         <div className={styles.list}>
@@ -139,29 +165,38 @@ export default function CatalogPage() {
                                     <div className={styles.price}>
                                         <p className={styles.selectName}>Цена</p>
                                         <Slider
-                                            value={priceRange}
-                                            onChange={handlePriceSliderChange}
-                                            min={0}
-                                            max={100}
-                                            step={1}
-                                            slotProps={{
-                                                thumb: {
-                                                    className: styles.orangeThumb,
-                                                },
-                                                rail: {
-                                                    className: styles.orangeRail,
-                                                },
-                                                track: {
-                                                    className: styles.orangeTrack,
-                                                },
-
-                                            }}
-                                            disableSwap
+                                              value={priceRange}
+                                              onChange={handlePriceSliderChange}
+                                              min={0}
+                                              max={Math.ceil(maxPrice)}
+                                              step={1}
+                                              slotProps={{
+                                                  thumb: {
+                                                      className: styles.orangeThumb,
+                                                  },
+                                                  rail: {
+                                                      className: styles.orangeRail,
+                                                  },
+                                                  track: {
+                                                      className: styles.orangeTrack,
+                                                  },
+                                              }}
+                                              disableSwap
                                         />
-                                    </div>
-                                    <div className={styles.blockPrice}>
-                                        <input type="number" className={styles.minPrice} />
-                                        <input type="number" className={styles.maxPrice} />
+                                        <div className={styles.blockPrice}>
+                                            <input
+                                                type="number"
+                                                className={styles.minPrice}
+                                                value={priceRange[0]}
+                                                onChange={handleMinPriceChange} 
+                                            />
+                                            <input
+                                                type="number"
+                                                className={styles.maxPrice}
+                                                value={priceRange[1]} 
+                                                onChange={handleMaxPriceChange}
+                                            />
+                                        </div>
                                     </div>
                                     <button type='button' className={styles.applyFilter} onClick={applyFilters}>
                                         Применить фильтры</button>

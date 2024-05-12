@@ -64,24 +64,34 @@ class ProductController {
     }
     async getAll(req, res, next) {
         try {
-            let { brandId, categoryId, limit, page } = req.query;
+            let { brandId, categoryId, limit, page, minPrice, maxPrice } = req.query;
             page = page || 1;
             limit = limit || 9;
             const offset = page * limit - limit;
             let product;
-        
+
+            const whereClause = {};
+
+            if (minPrice !== undefined && maxPrice !== undefined) {
+                whereClause.price = { [Op.between]: [minPrice, maxPrice] };
+            }
+
             if (!brandId && !categoryId) {
-                product = await Products.findAndCountAll({ limit, offset });
+                product = await Products.findAndCountAll({ where: whereClause, limit, offset });
             } else if (brandId && !categoryId) {
-                product = await Products.findAndCountAll({ where: { brandId }, limit, offset });
+                whereClause.brandId = brandId;
+                product = await Products.findAndCountAll({ where: whereClause, limit, offset });
             } else if (!brandId && categoryId) {
                 const categoryIdArray = categoryId.split(',').map(Number);
-                product = await Products.findAndCountAll({ where: { categoryId: categoryIdArray }, limit, offset });
+                whereClause.categoryId = categoryIdArray;
+                product = await Products.findAndCountAll({ where: whereClause, limit, offset });
             } else if (brandId && categoryId) {
                 const categoryIdArray = categoryId.split(',').map(Number);
-                product = await Products.findAndCountAll({ where: { categoryId: categoryIdArray, brandId }, limit, offset });
+                whereClause.categoryId = categoryIdArray;
+                whereClause.brandId = brandId;
+                product = await Products.findAndCountAll({ where: whereClause, limit, offset });
             }
-        
+
             return res.json(product);
         } catch (e) {
             return next(ApiError.badRequest("Ошибка сервера"));
@@ -154,6 +164,14 @@ class ProductController {
                 productToUpdate.quantity_product = parsedQuantity;
             }
 
+            if ('price' in updates) {
+                const parsedPrice = parseFloat(updates.price);
+                if (isNaN(parsedPrice) || parsedPrice <= 0) {
+                    return next(ApiError.badRequest("Некорректное значение цены товара"));
+                }
+                productToUpdate.price = parsedPrice;
+            }
+            
             for (const key of Object.keys(updates)) {
                 if (key !== 'quantity_product' && key !== 'price') {
                     productToUpdate[key] = updates[key];
@@ -172,22 +190,56 @@ class ProductController {
             if (!query) {
                 return res.status(400).json({ error: 'Query parameter is missing' });
             }
-    
+
             const searchQuery = query.toLowerCase();
-    
+
             const products = await Products.findAll({
                 where: {
                     name: { [Op.iLike]: `%${searchQuery}%` }
                 }
             });
-    
+
             return res.json(products);
         } catch (e) {
             console.error('Error in search controller:', e);
             return next(ApiError.internal("Internal server error: " + e.message));
         }
     }
-    
+
+    async getMaxPriceProduct(req, res, next) {
+        try {
+            const { brandId, categoryId, minPrice, maxPrice } = req.query;
+
+            const whereClause = {};
+
+            if (minPrice !== undefined && maxPrice !== undefined) {
+                whereClause.price = { [Op.between]: [minPrice, maxPrice] };
+            }
+
+            if (brandId !== undefined) {
+                whereClause.brandId = brandId;
+            }
+
+            if (categoryId !== undefined) {
+                const categoryIdArray = categoryId.split(',').map(Number);
+                whereClause.categoryId = categoryIdArray;
+            }
+
+            const maxPriceProduct = await Products.findOne({
+                where: whereClause,
+                order: [['price', 'DESC']],
+                attributes: ['price'], // Запрос только поля цены
+            });
+
+            if (!maxPriceProduct) {
+                throw ApiError.notFound('Продукт не найден');
+            }
+
+            return res.json(maxPriceProduct.price); // Отправляем только цену
+        } catch (e) {
+            return next(ApiError.badRequest('Ошибка сервера'));
+        }
+    }
 }
 
 module.exports = new ProductController()
