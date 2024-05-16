@@ -9,11 +9,30 @@
 .profile{
     font-size: 30px;
 }
-.deleteProfile{
+.editProfile{
     display: flex;
     align-items: center;
     font-size: 16px;
-    color: red;
+    color: #bebebe;
+    cursor: pointer;
+}
+.editProfile:hover{
+    color: black;
+}
+.activeEdit {
+    color: black; /* Цвет кнопки "Редактировать" после активации */
+}
+
+.showButton {
+    display: block; /* Показать кнопку "Сохранить данные" */
+}
+
+.hideButton {
+    display: none; /* Скрыть кнопку "Сохранить данные" */
+}
+.scores{
+    margin: auto;
+    font-size: 18px;
 }
 .updateProfileContent{
     display: grid;

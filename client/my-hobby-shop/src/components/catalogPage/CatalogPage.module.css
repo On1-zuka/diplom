@@ -109,6 +109,7 @@
     height: 45px;
     width: 48%;
     padding: 0px 0px 0px 10px;
+    font-size: 14px;
 }
 .blockPrice input[type="number"]::-webkit-inner-spin-button,
 .blockPrice input[type="number"]::-webkit-outer-spin-button,

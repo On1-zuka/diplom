@@ -19,8 +19,7 @@ class OrderController {
             if (!userId || typeof userId !== 'number') {
                 return next(ApiError.badRequest('Не удалось получить id пользователя из JWT'));
             }
-    
-            // Преобразуем дату в формат "yyyy-mm-dd" перед созданием объекта Date
+
             const formattedOrderDate = orderDate.split('.').reverse().join('-');
     
             const isPickup = pickup === true;

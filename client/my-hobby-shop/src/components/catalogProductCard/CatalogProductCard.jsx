@@ -64,7 +64,6 @@ export default function CatalogProductCard({ product }) {
                 </button>
                 
             </div>
-            <ToastContainer />
         </div>
     );
 }

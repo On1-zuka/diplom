@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pagination, Slider } from "@mui/material";
 import Checkbox from '../../common/checkboxWithText/checkbox';
+import { ToastContainer } from 'react-toastify';
 
 export default function CatalogPage() {
     const [products, setProducts] = useState([]);
@@ -133,6 +134,10 @@ export default function CatalogPage() {
         const maxPriceValue = parseFloat(e.target.value);
         setMaxPrice(maxPriceValue);
     };
+
+    const handleResetFilter = () => {
+        window.location.reload();
+    };
     return (
         <div>
             <main className={styles.catalogPage}>
@@ -141,7 +146,7 @@ export default function CatalogPage() {
                         <form action="" className={styles.fromCatalog}>
                             <div className={styles.filter}>
                                 <div className={styles.filterCategory}>
-                                    <button type="reset" className={styles.hideFilter} >Сбросить фильтр(ы) </button>
+                                    <button type="reset" className={styles.hideFilter} onClick={handleResetFilter}>Сбросить фильтр(ы) </button>
                                     <div className={styles.category}>
                                         <p className={styles.selectName}>Категории</p>
                                         <div className={styles.list}>
@@ -165,41 +170,41 @@ export default function CatalogPage() {
                                     <div className={styles.price}>
                                         <p className={styles.selectName}>Цена</p>
                                         <Slider
-                                              value={priceRange}
-                                              onChange={handlePriceSliderChange}
-                                              min={0}
-                                              max={Math.ceil(maxPrice)}
-                                              step={1}
-                                              slotProps={{
-                                                  thumb: {
-                                                      className: styles.orangeThumb,
-                                                  },
-                                                  rail: {
-                                                      className: styles.orangeRail,
-                                                  },
-                                                  track: {
-                                                      className: styles.orangeTrack,
-                                                  },
-                                              }}
-                                              disableSwap
+                                            value={priceRange}
+                                            onChange={handlePriceSliderChange}
+                                            min={0}
+                                            max={Math.ceil(maxPrice)}
+                                            step={1}
+                                            slotProps={{
+                                                thumb: {
+                                                    className: styles.orangeThumb,
+                                                },
+                                                rail: {
+                                                    className: styles.orangeRail,
+                                                },
+                                                track: {
+                                                    className: styles.orangeTrack,
+                                                },
+                                            }}
+                                            disableSwap
                                         />
                                         <div className={styles.blockPrice}>
                                             <input
                                                 type="number"
                                                 className={styles.minPrice}
                                                 value={priceRange[0]}
-                                                onChange={handleMinPriceChange} 
+                                                onChange={handleMinPriceChange}
                                             />
                                             <input
                                                 type="number"
                                                 className={styles.maxPrice}
-                                                value={priceRange[1]} 
+                                                value={priceRange[1]}
                                                 onChange={handleMaxPriceChange}
                                             />
                                         </div>
                                     </div>
                                     <button type='button' className={styles.applyFilter} onClick={applyFilters}>
-                                        Применить фильтры</button>
+                                        Применить фильтр(ы)</button>
                                 </div>
                             </div>
                             <div className={styles.catalogPanel}>
@@ -226,6 +231,7 @@ export default function CatalogPage() {
                                     ) : (
                                         <p className={styles.noProducts}>Нет доступных товаров</p>
                                     )}
+                                     <ToastContainer />
                                 </div>
                                 <div className={styles.pagination}>
                                     <Pagination

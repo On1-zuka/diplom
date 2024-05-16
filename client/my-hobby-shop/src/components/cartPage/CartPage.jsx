@@ -11,6 +11,7 @@ export default function CartPage() {
     const [paymentMethod, setPaymentMethod] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedTime, setSelectedTime] = useState('');
+    const [isChecked, setIsChecked] = useState(false);
     const [userData, setUserData] = useState({
         id: '',
         login: '',
@@ -93,37 +94,37 @@ export default function CartPage() {
         setSelectedTime(timeString);
     };
 
-        const handlePayment = async (event) => {
-            event.preventDefault();
-            if (deliveryMethod !== 'courier' && deliveryMethod !== 'pickup') {
-                toast.error('Выберите способ доставки');
-                return;
-            }
+    const handlePayment = async (event) => {
+        event.preventDefault();
+        if (deliveryMethod !== 'courier' && deliveryMethod !== 'pickup') {
+            toast.error('Выберите способ доставки');
+            return;
+        }
 
-            if (deliveryMethod === 'courier' && (!selectedDate || !selectedTime)) {
-                toast.error('Выберите дату и время для доставки');
-                return;
-            }
-        
-            if (paymentMethod !== 'receipt' && paymentMethod !== 'card') {
-                toast.error('Выберите способ оплаты');
-                return;
-            }
-            
-            const orderData = {
-                orderDate: selectedDate,
-                pickup: deliveryMethod === 'courier',
-                orderTime: selectedTime,
-                finalPrice: totalPrice.toFixed(2)
-            };
+        if (deliveryMethod === 'courier' && (!selectedDate || !selectedTime)) {
+            toast.error('Выберите дату и время для доставки');
+            return;
+        }
 
-            try {
-                const response = await axios.post(`${process.env.API_BASE_URL}/order/create-order`, orderData, { withCredentials: true });
-                console.log('Order submitted successfully:', response.data);
-            } catch (error) {
-                console.error('Error submitting order:', error);
-            }
+        if (paymentMethod !== 'receipt' && paymentMethod !== 'card') {
+            toast.error('Выберите способ оплаты');
+            return;
+        }
+
+        const orderData = {
+            orderDate: selectedDate,
+            pickup: deliveryMethod === 'courier',
+            orderTime: selectedTime,
+            finalPrice: totalPrice.toFixed(2)
         };
+
+        try {
+            const response = await axios.post(`${process.env.API_BASE_URL}/order/create-order`, orderData, { withCredentials: true });
+            console.log('Order submitted successfully:', response.data);
+        } catch (error) {
+            console.error('Error submitting order:', error);
+        }
+    };
 
     const getNextDay = () => {
         const currentDate = new Date();
@@ -146,6 +147,10 @@ export default function CartPage() {
             }
         }
         return nextFiveDays.toISOString().split('T')[0];
+    };
+
+    const handleToggle = () => {
+        setIsChecked(!isChecked);
     };
 
     return (
@@ -270,7 +275,14 @@ export default function CartPage() {
                                         onChange={() => { }} />
                                     Оплата картой при получении
                                 </div>
+                            </div>
+                            <div className={styles.titlePoint}>5. Оформление заказа</div>
+                            <div className={styles.scoresBox}>
                                 <button className={styles.payButton} onClick={handlePayment}>Завершить оформление</button>
+                                <div className={styles.scores} onClick={handleToggle}>
+                                    <input type="checkbox" className={styles.way} checked={isChecked} onChange={() => { }} />
+                                    Использовать баллы?
+                                </div>
                             </div>
                         </form>
                     )}

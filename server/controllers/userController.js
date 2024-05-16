@@ -10,7 +10,7 @@ const generateJwt = (id) => {
 
 class UserController {
     async registration(req, res, next) {
-        const { login, name, surname, patronymic, address, email, password, phone } = req.body;
+        const { login, name, surname, patronymic, address, email, password, phone, scores } = req.body;
         if (!login || !name || !surname || !address || !email || !password || !patronymic || !phone) {
             return next(ApiError.badRequest('Необходимо указать все данные для регистрации'));
         }
@@ -67,29 +67,22 @@ class UserController {
     }
     async profile(req, res, next) {
         try {
-            // Получаем токен из cookies
             const token = req.cookies.token;
-            // Проверяем, есть ли токен
             if (!token) {
                 return next(ApiError.unauthorized('Требуется аутентификация'));
             }
-            // Проверяем токен на валидность
             let decodedToken;
             try {
                 decodedToken = jwt.verify(token, process.env.SECRET_KEY); // Замените process.env.JWT_SECRET на ваш секретный ключ JWT
             } catch (err) {
                 return next(ApiError.unauthorized('Неверный токен'));
             }
-            // Получаем ID пользователя из декодированного токена
             const userId = decodedToken.id;
-
-            // Проверяем существование пользователя в базе данных
             const user = await User.findByPk(userId);
 
             if (!user) {
                 return next(ApiError.notFound('Пользователь не найден'));
             }
-            // Отправляем данные пользователя клиенту
             return res.json({ user });
         } catch (err) {
             return next(ApiError.internal('Внутренняя ошибка сервера'));
@@ -99,6 +92,44 @@ class UserController {
         try {
             res.clearCookie('token', { domain: 'localhost' });
             return res.json({ message: 'Выход выполнен успешно' });
+        } catch (err) {
+            return next(ApiError.internal('Внутренняя ошибка сервера'));
+        }
+    }
+
+    async editProfile(req, res, next) {
+        try {
+            const { name, surname, patronymic, phone, address } = req.body;
+            const token = req.cookies.token;
+    
+            if (!token) {
+                return next(ApiError.unauthorized('Требуется аутентификация'));
+            }
+    
+            let decodedToken;
+            try {
+                decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+            } catch (err) {
+                return next(ApiError.unauthorized('Неверный токен'));
+            }
+    
+            const userId = decodedToken.id;
+            const user = await User.findByPk(userId);
+    
+            if (!user) {
+                return next(ApiError.notFound('Пользователь не найден'));
+            }
+    
+            // Обновляем только те поля, которые были переданы
+            if (name) user.name = name;
+            if (surname) user.surname = surname;
+            if (patronymic) user.patronymic = patronymic;
+            if (phone) user.phone = phone;
+            if (address) user.address = address;
+    
+            await user.save(); // Сохраняем обновленные данные пользователя
+    
+            return res.json({ message: 'Данные пользователя успешно обновлены', user });
         } catch (err) {
             return next(ApiError.internal('Внутренняя ошибка сервера'));
         }

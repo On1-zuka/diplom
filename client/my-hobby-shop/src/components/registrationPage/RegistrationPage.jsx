@@ -8,18 +8,25 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import CallIcon from '@mui/icons-material/Call';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
+import WelcomeEmail from '../../email/welcomeEmail/WelcomeEmail';
+import ReactDOMServer from 'react-dom/server';
 
 export default function RegistrationPage() {
     const [step, setStep] = useState(1);
     const [regForm, setRegForm] = useState({ login: '', email: '', password: '', name: '', surname: '', patronymic: '', address: '', phone: '' });
-
-    const notify = () => toast("Регистрация прошла успешно!");
+    const [formData, setFormData] = useState({
+        to: '',
+        subject: '',
+        text: '',
+      });
 
     async function registration(e) {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/api/users/registration', regForm);
-            console.log(response.data); // Логируем ответ от сервера для проверки
+            const response = await axios.post(`${process.env.API_BASE_URL}/users/registration`, regForm);
+            console.log(response.data);
+            toast.success('Регистрация прошла успешно!');
+            sendEmail();
         } catch (error) {
             console.error('Registration failed:', error);
         }
@@ -27,6 +34,26 @@ export default function RegistrationPage() {
 
     const handleNextStep = () => {
         setStep(step + 1);
+    };
+
+    const sendEmail = async () => {
+        try {
+           //const emailComponent = <WelcomeEmail login={regForm.email} password={regForm.password} />;
+            //const emailText = ReactDOMServer.renderToStaticMarkup(emailComponent);
+            const updatedFormData = {
+                to: regForm.email,
+                subject: 'Добро пожаловать!',
+                text: "спс",
+            };
+    
+            setFormData(updatedFormData);
+    
+            await axios.post(`${process.env.API_BASE_URL}/email/send-email-user`, updatedFormData);
+            toast.success('Электронное письмо успешно отправлено!');
+        } catch (error) {
+            console.error('Ошибка при отправке письма:', error);
+            toast.error('Ошибка при отправке электронного письма');
+        }
     };
 
     return (
@@ -98,7 +125,7 @@ export default function RegistrationPage() {
                                     <HomeIcon className={styles.PasswordIcon} />
                                 </div>
                             </div>
-                            <button type="submit" className={styles.btn} onClick={notify}>Зарегистрироваться</button>
+                            <button type="submit" className={styles.btn}>Зарегистрироваться</button>
                             <ToastContainer />
                         </form>
                     )}

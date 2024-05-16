@@ -115,6 +115,10 @@
 .pointHome{
     margin: 0px 0px 15px 0px;
 }
+.payMethod{
+    display: flex;
+    justify-content: space-between;
+}
 .payCard,
 .payReceipt{
     display: flex;
@@ -139,6 +143,24 @@
     color: white;
     border-radius: 10px;
     width: 395px;
-    margin-top: 20px;
     font-size: 20px;
+}
+.scoresBox{
+    display: flex;
+    justify-content: space-between;
+}
+.scores{
+    display: flex;
+    align-items: center;
+    height: 53px;
+    width: 395px;
+    border: 1px solid #bebebe;
+    border-radius: 10px;
+    padding: 0px 10px;
+}
+.scores input[type="checkbox"] {
+    margin-right: 5px;
+}
+.scores label {
+    margin-left: 5px;
 }

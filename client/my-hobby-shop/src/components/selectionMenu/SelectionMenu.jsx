@@ -26,7 +26,8 @@ export default function SelectionMenu(){
                 setUserData({
                     id: user.id,
                     login: user.login,
-                    email: user.email
+                    email: user.email,
+                    scores: user.scores
                 });
             } catch (error) {
                 console.error('Ошибка при получении данных пользователя:', error);
@@ -64,6 +65,7 @@ export default function SelectionMenu(){
                             <div className={styles.headerMenu}>
                                 <div className={styles.loginMenu}>{userData.login}</div>
                                 <div className={styles.emailMenu}>{userData.email}</div>
+                                <div className={styles.scores}>Ваши быллы: <span>{userData.scores}</span></div>
                             </div>
                             <div className={styles.bottomMenu}>
                                 <ul className={styles.listMenu}>
