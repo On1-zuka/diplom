@@ -23,6 +23,7 @@
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.1",
+    "styled-components": "^6.1.11",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

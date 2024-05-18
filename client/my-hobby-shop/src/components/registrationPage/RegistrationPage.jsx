@@ -43,7 +43,7 @@ export default function RegistrationPage() {
             const updatedFormData = {
                 to: regForm.email,
                 subject: 'Добро пожаловать!',
-                text: "спс",
+                text: 'aaa',
             };
     
             setFormData(updatedFormData);

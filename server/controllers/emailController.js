@@ -19,7 +19,7 @@ class EmailController {
     const { subject, text } = req.body;
     const mailOptions = {
       from: 'myhobbya75@gmail.com',
-      to: 'myhobbya75@gmail.com', // Change this to the admin's email
+      to: 'myhobbya75@gmail.com',
       subject,
       text,
     };

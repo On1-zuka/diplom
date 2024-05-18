@@ -3,6 +3,7 @@ import CartProductCard from '../cartProductCard/CartProductCard';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import styles from './CartPage.module.css';
+import moment from 'moment';
 
 export default function CartPage() {
     const [productCard, setProductCard] = useState([]);
@@ -77,6 +78,7 @@ export default function CartPage() {
 
         fetchCartItems();
     }, []);
+    
 
     useEffect(() => {
         setTotalPrice(calculateTotalPrice);
@@ -111,11 +113,17 @@ export default function CartPage() {
             return;
         }
 
+        // Устанавливаем текущие дату и время для самовывоза, если не указаны
+        const currentDate = moment();
+        const orderDate = deliveryMethod === 'pickup' && !selectedDate ? currentDate.format('DD.MM.YYYY') : selectedDate;
+        const orderTime = deliveryMethod === 'pickup' && !selectedTime ? currentDate.format('HH:mm') : selectedTime;
+
         const orderData = {
-            orderDate: selectedDate,
-            pickup: deliveryMethod === 'courier',
-            orderTime: selectedTime,
-            finalPrice: totalPrice.toFixed(2)
+            orderDate,
+            pickup: deliveryMethod === 'pickup',
+            orderTime,
+            finalPrice: totalPrice.toFixed(2),
+            usePoints: isChecked
         };
 
         try {

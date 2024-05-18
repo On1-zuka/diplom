@@ -14,6 +14,7 @@ export default function CartProductCard({ product, productId, updateProductList,
     const [totalPrice, setTotalPrice] = useState((product.product.price * product.quantity).toFixed(2));
     const maxQuantity = product.product.quantity_product;
     const [displayQuantity, setDisplayQuantity] = useState(product.quantity);
+    const [showQuantityMessage, setShowQuantityMessage] = useState(true);
 
     useEffect(() => {
         setTotalPrice((inputQuantity * product.product.price).toFixed(2));
@@ -21,8 +22,8 @@ export default function CartProductCard({ product, productId, updateProductList,
 
     useEffect(() => {
         if (product.quantity > maxQuantity) {
-            setInputQuantity(maxQuantity);
-            setDisplayQuantity(maxQuantity);
+            //setInputQuantity(maxQuantity);
+            //setDisplayQuantity(maxQuantity);
             calculateTotalPrice(maxQuantity);
         }
     }, [product.quantity, maxQuantity]);
@@ -55,7 +56,6 @@ export default function CartProductCard({ product, productId, updateProductList,
             updateTotalPrice(prevTotalPrice => prevTotalPrice + product.product.price);
         }
     };
-    
     const handleDecrement = () => {
         if (inputQuantity > 1) {
             const newQuantity = inputQuantity - 1;
@@ -63,29 +63,34 @@ export default function CartProductCard({ product, productId, updateProductList,
             setInputQuantity(newQuantity);
             setDisplayQuantity(newQuantity);
             calculateTotalPrice(newQuantity);
-            updateTotalPrice(prevTotalPrice => prevTotalPrice - product.product.price); 
+            updateTotalPrice(prevTotalPrice => prevTotalPrice - product.product.price);
+            if (newQuantity < maxQuantity) {
+                setDisplayQuantity(newQuantity);
+            }
+            if (newQuantity < product.product.quantity_product) {
+                setShowQuantityMessage(false);
+            }
         }
     };
-
     const calculateTotalPrice = (newQuantity) => {
         const newTotalPrice = (product.product.price * newQuantity).toFixed(2);
         setTotalPrice(newTotalPrice);
     };
-    
+
     const handleChangeQuantity = (e) => {
-    const value = e.target.value;
-    if (/^\d*$/.test(value)) {
-        const newValue = value === '' ? '' : Math.min(parseInt(value), product.product.quantity);
-        if (newValue > 0) {
-            setInputQuantity(newValue);
-            setDisplayQuantity(newValue);
-            calculateTotalPrice(newValue);
-            updateTotalPrice(product.product.price * newValue);
-        } else {
-            return;
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) {
+            const newValue = value === '' ? '' : Math.min(parseInt(value), product.product.quantity);
+            if (newValue > 0) {
+                setInputQuantity(newValue);
+                setDisplayQuantity(newValue);
+                calculateTotalPrice(newValue);
+                updateTotalPrice(product.product.price * newValue);
+            } else {
+                return;
+            }
         }
-    }
-};
+    };
 
     const updateQuantityOnServer = (newQuantity) => {
         axios.patch(`${process.env.API_BASE_URL}/cart/update/${product.productId}`, {
@@ -107,7 +112,7 @@ export default function CartProductCard({ product, productId, updateProductList,
                     </Link>
                     <FavoriteBorderIcon className={styles.favorite} />
                 </div>
-                {product.quantity > maxQuantity && (
+                {inputQuantity > maxQuantity && (
                     <div className={styles.quantity}>
                         <p>Кол-во товаров: {product.product.quantity_product}</p>
                     </div>
