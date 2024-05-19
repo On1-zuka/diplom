@@ -1,5 +1,5 @@
-import styles from './CatalogPage.module.css'
-import CatalogProductCard from '../catalogProductCard/CatalogProductCard'
+import styles from './CatalogPage.module.css';
+import CatalogProductCard from '../catalogProductCard/CatalogProductCard';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pagination, Slider } from "@mui/material";
@@ -18,13 +18,17 @@ export default function CatalogPage() {
     const [brands, setBrands] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedBrands, setSelectedBrands] = useState([]);
+    const [inStock, setInStock] = useState("");
 
     useEffect(() => {
-        fetchData();
         fetchCategories();
         fetchBrands();
         fetchMaxPrice();
-    }, [page, limit, sortOption]);
+    }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [page, limit]);
 
     const fetchData = async () => {
         try {
@@ -36,6 +40,7 @@ export default function CatalogPage() {
                     page,
                     minPrice: priceRange[0],
                     maxPrice: priceRange[1],
+                    inStock,
                 },
             });
             setProducts(response.data.rows);
@@ -44,6 +49,7 @@ export default function CatalogPage() {
             console.error('Error fetching data:', error);
         }
     };
+
     const fetchCategories = async () => {
         try {
             const response = await axios.get(`${process.env.API_BASE_URL}/categories`);
@@ -58,7 +64,7 @@ export default function CatalogPage() {
             const response = await axios.get(`${process.env.API_BASE_URL}/brands`);
             setBrands(response.data);
         } catch (error) {
-            console.error('Error fetching brands:', error)
+            console.error('Error fetching brands:', error);
         }
     };
 
@@ -89,6 +95,11 @@ export default function CatalogPage() {
         setPage(value);
     };
 
+    const handlePaginationChange = (event, value) => {
+        setPage(value);
+    };
+
+
     const sortedProducts = () => {
         let sorted = [...products];
         if (sortOption === "price-desc") {
@@ -98,13 +109,9 @@ export default function CatalogPage() {
         } else if (sortOption === "name-asc") {
             sorted.sort((a, b) => a.name.localeCompare(b.name));
         } else if (sortOption === "name-desc") {
-            sorted.sort((a, b) => b.name.localeCompare(a.name))
+            sorted.sort((a, b) => b.name.localeCompare(a.name));
         }
         return sorted;
-    };
-
-    const handlePaginationChange = (event, value) => {
-        setPage(value);
     };
 
     const handleCategoryChange = (category) => {
@@ -122,6 +129,7 @@ export default function CatalogPage() {
     };
 
     const applyFilters = () => {
+        setPage(1); // Reset to the first page
         fetchData();
     };
 
@@ -132,39 +140,69 @@ export default function CatalogPage() {
 
     const handleMaxPriceChange = (e) => {
         const maxPriceValue = parseFloat(e.target.value);
-        setMaxPrice(maxPriceValue);
+        setPriceRange([priceRange[0], maxPriceValue]);
     };
 
     const handleResetFilter = () => {
-        window.location.reload();
+        setSelectedCategories([]);
+        setSelectedBrands([]);
+        setPriceRange([0, maxPrice]);
+        setInStock("");
+        setSortOption("");
+        setPage(1);
+        fetchData();
     };
+
     return (
         <div>
             <main className={styles.catalogPage}>
                 <section className={styles.catalogWindow}>
                     <div className={styles.container}>
-                        <form action="" className={styles.fromCatalog}>
+                        <form className={styles.fromCatalog}>
                             <div className={styles.filter}>
                                 <div className={styles.filterCategory}>
-                                    <button type="reset" className={styles.hideFilter} onClick={handleResetFilter}>Сбросить фильтр(ы) </button>
+                                    <button type="reset" className={styles.hideFilter} onClick={handleResetFilter}>
+                                        Сбросить фильтр(ы) и сортировку
+                                    </button>
                                     <div className={styles.category}>
                                         <p className={styles.selectName}>Категории</p>
                                         <div className={styles.list}>
-                                            {categories.map(category => (
-                                                <Checkbox key={category.id} label={category.name}
+                                            {categories.map((category) => (
+                                                <Checkbox
+                                                    key={category.id}
+                                                    label={category.name}
                                                     checked={selectedCategories.includes(category.id)}
-                                                    onChange={() => handleCategoryChange(category.id)} />
+                                                    onChange={() => handleCategoryChange(category.id)}
+                                                />
                                             ))}
                                         </div>
                                     </div>
                                     <div className={styles.brand}>
                                         <p className={styles.selectName}>Бренды</p>
                                         <div className={styles.list}>
-                                            {brands.map(brand => (
-                                                <Checkbox key={brand.id} label={brand.name}
+                                            {brands.map((brand) => (
+                                                <Checkbox
+                                                    key={brand.id}
+                                                    label={brand.name}
                                                     checked={selectedBrands.includes(brand.id)}
-                                                    onChange={() => handleBrandChange(brand.id)} />
+                                                    onChange={() => handleBrandChange(brand.id)}
+                                                />
                                             ))}
+                                        </div>
+                                    </div>
+                                    <div className={styles.stock}>
+                                        <p className={styles.selectName}>В наличии</p>
+                                        <div className={styles.pointStock}>
+                                            <Checkbox
+                                                label="Да"
+                                                checked={inStock === "yes"}
+                                                onChange={() => setInStock(inStock === "yes" ? "" : "yes")}
+                                            />
+                                            <Checkbox
+                                                label="Нет"
+                                                checked={inStock === "no"}
+                                                onChange={() => setInStock(inStock === "no" ? "" : "no")}
+                                            />
                                         </div>
                                     </div>
                                     <div className={styles.price}>
@@ -203,8 +241,9 @@ export default function CatalogPage() {
                                             />
                                         </div>
                                     </div>
-                                    <button type='button' className={styles.applyFilter} onClick={applyFilters}>
-                                        Применить фильтр(ы)</button>
+                                    <button type="button" className={styles.applyFilter} onClick={applyFilters}>
+                                        Применить фильтр(ы)
+                                    </button>
                                 </div>
                             </div>
                             <div className={styles.catalogPanel}>
@@ -225,13 +264,13 @@ export default function CatalogPage() {
                                 </div>
                                 <div className={styles.content}>
                                     {products.length > 0 ? (
-                                        sortedProducts().map(product => (
+                                        sortedProducts().map((product) => (
                                             <CatalogProductCard key={product.id} product={product} />
                                         ))
                                     ) : (
                                         <p className={styles.noProducts}>Нет доступных товаров</p>
                                     )}
-                                     <ToastContainer />
+                                    <ToastContainer />
                                 </div>
                                 <div className={styles.pagination}>
                                     <Pagination
@@ -259,5 +298,5 @@ export default function CatalogPage() {
                 </section>
             </main>
         </div>
-    )
+    );
 }

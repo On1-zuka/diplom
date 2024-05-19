@@ -64,18 +64,26 @@ class ProductController {
     }
     async getAll(req, res, next) {
         try {
-            let { brandId, categoryId, limit, page, minPrice, maxPrice } = req.query;
+            let { brandId, categoryId, limit, page, minPrice, maxPrice, inStock } = req.query;
             page = page || 1;
             limit = limit || 9;
             const offset = page * limit - limit;
             let product;
-
+    
             const whereClause = {};
-
+    
             if (minPrice !== undefined && maxPrice !== undefined) {
                 whereClause.price = { [Op.between]: [minPrice, maxPrice] };
             }
-
+    
+            if (inStock !== undefined) {
+                if (inStock === 'yes') {
+                    whereClause.quantity_product = { [Op.gt]: 0 };
+                } else if (inStock === 'no') {
+                    whereClause.quantity_product = { [Op.eq]: 0 };
+                }
+            }
+    
             if (!brandId && !categoryId) {
                 product = await Products.findAndCountAll({ where: whereClause, limit, offset });
             } else if (brandId && !categoryId) {
@@ -91,7 +99,7 @@ class ProductController {
                 whereClause.brandId = brandId;
                 product = await Products.findAndCountAll({ where: whereClause, limit, offset });
             }
-
+    
             return res.json(product);
         } catch (e) {
             return next(ApiError.badRequest("Ошибка сервера"));

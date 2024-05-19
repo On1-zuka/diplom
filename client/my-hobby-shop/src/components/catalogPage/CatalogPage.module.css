@@ -98,6 +98,13 @@
 .orangeThumb:hover {
     color: orange;
 }
+.pointStock{
+    margin: 0px 0px 20px 0px;
+}
+.pointStock input{
+    display: flex;
+    
+}
 .blockPrice{
     display: flex;
     justify-content: space-between;
