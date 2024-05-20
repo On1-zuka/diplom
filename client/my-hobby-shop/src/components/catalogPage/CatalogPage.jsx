@@ -5,9 +5,10 @@ import axios from 'axios';
 import { Pagination, Slider } from "@mui/material";
 import Checkbox from '../../common/checkboxWithText/checkbox';
 import { ToastContainer } from 'react-toastify';
+import { useParams } from 'react-router-dom';
 
 export default function CatalogPage() {
-    const [products, setProducts] = useState([]);
+const [products, setProducts] = useState([]);
     const [maxPrice, setMaxPrice] = useState(100);
     const [priceRange, setPriceRange] = useState([0, maxPrice]);
     const [sortOption, setSortOption] = useState("");
@@ -19,6 +20,7 @@ export default function CatalogPage() {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedBrands, setSelectedBrands] = useState([]);
     const [inStock, setInStock] = useState("");
+    const { id } = useParams();
 
     useEffect(() => {
         fetchCategories();
@@ -32,9 +34,10 @@ export default function CatalogPage() {
 
     const fetchData = async () => {
         try {
+            const brandIds = id ? [id, ...selectedBrands] : selectedBrands;
             const response = await axios.get(`${process.env.API_BASE_URL}/products`, {
                 params: {
-                    brandId: selectedBrands.join(','),
+                    brandId: brandIds.join(','),
                     categoryId: selectedCategories.join(','),
                     limit,
                     page,
@@ -99,7 +102,6 @@ export default function CatalogPage() {
         setPage(value);
     };
 
-
     const sortedProducts = () => {
         let sorted = [...products];
         if (sortOption === "price-desc") {
@@ -121,15 +123,15 @@ export default function CatalogPage() {
         setSelectedCategories(updatedCategories);
     };
 
-    const handleBrandChange = (brand) => {
-        const updatedBrands = selectedBrands.includes(brand)
-            ? selectedBrands.filter((br) => br !== brand)
-            : [...selectedBrands, brand];
+    const handleBrandChange = (brandId) => {
+        const updatedBrands = selectedBrands.includes(brandId)
+            ? selectedBrands.filter((br) => br !== brandId)
+            : [...selectedBrands, brandId];
         setSelectedBrands(updatedBrands);
     };
 
     const applyFilters = () => {
-        setPage(1); // Reset to the first page
+        setPage(1) 
         fetchData();
     };
 
@@ -202,6 +204,7 @@ export default function CatalogPage() {
                                                 label="Нет"
                                                 checked={inStock === "no"}
                                                 onChange={() => setInStock(inStock === "no" ? "" : "no")}
+                                                disabled={inStock === "yes"}
                                             />
                                         </div>
                                     </div>

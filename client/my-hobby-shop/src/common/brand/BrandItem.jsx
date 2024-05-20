@@ -1,12 +1,13 @@
+import React from 'react';
 import styles from './BrandItem.module.css';
+import { Link } from 'react-router-dom';
 
-const BrandItem = ({ brand }) => {
+const BrandItem = ({ brand, onClick }) => {
     return (
-        <div className={styles.brandItem}>
-            <a href='#' className={styles.brandItem__link}>
-            <img src={`http://localhost:5000/api/images/${brand.img}`} alt="картинка бренда" className={styles.brandItem__img}/>
-            </a>
-        </div>
+
+            <Link to={`/brands/catalog/${brand.id}`} className={styles.brandItem}>
+                <img src={`${process.env.API_BASE_URL}/images/${brand.img}`} alt="картинка бренда" className={styles.brandItem__img}/>
+            </Link>
     );
 }
 

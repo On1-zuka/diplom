@@ -236,16 +236,34 @@ class ProductController {
             const maxPriceProduct = await Products.findOne({
                 where: whereClause,
                 order: [['price', 'DESC']],
-                attributes: ['price'], // Запрос только поля цены
+                attributes: ['price'],
             });
 
             if (!maxPriceProduct) {
                 throw ApiError.notFound('Продукт не найден');
             }
 
-            return res.json(maxPriceProduct.price); // Отправляем только цену
+            return res.json(maxPriceProduct.price);
         } catch (e) {
             return next(ApiError.badRequest('Ошибка сервера'));
+        }
+    }
+    async getProductsByBrand(req, res, next) {
+        try {
+            const { brandId } = req.params;
+
+            if (!brandId) {
+                return next(ApiError.badRequest('Не указан идентификатор бренда'));
+            }
+
+            const products = await Products.findAll({
+                where: { brandId },
+            });
+
+            return res.json(products);
+        } catch (e) {
+            console.error('Error in getProductsByBrand controller:', e);
+            return next(ApiError.internal("Внутренняя ошибка сервера: " + e.message));
         }
     }
 }

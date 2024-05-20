@@ -1,7 +1,7 @@
-import styles from './BrandsPage.module.css'
-import BrandItem from '../../common/brand/BrandItem';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import BrandItem from '../../common/brand/BrandItem';
+import styles from './BrandsPage.module.css';
 
 export default function BrandsPage() {
     const [brands, setBrands] = useState([]);
@@ -18,6 +18,10 @@ export default function BrandsPage() {
         fetchData();
     }, []);
 
+    const handleBrandClick = (brandId) => {
+        console.log('Clicked on brand with ID:', brandId);
+    };
+
     return (
         <main className={styles.main}>
             <section className={styles.sectionForm}>
@@ -25,7 +29,9 @@ export default function BrandsPage() {
                     <h2 className={styles.title}>Все бренды</h2>
                     <div className={styles.brandsAndCategoryList}>
                         {brands && brands.length > 0 ? (
-                            brands.map((brand) => <BrandItem key={brand.id} brand={brand} />)
+                            brands.map((brand) => (
+                                <BrandItem key={brand.id} brand={brand} onClick={handleBrandClick} />
+                            ))
                         ) : (
                             <p>No brands found.</p>
                         )}
@@ -33,5 +39,5 @@ export default function BrandsPage() {
                 </div>
             </section>
         </main>
-    )
+    );
 }

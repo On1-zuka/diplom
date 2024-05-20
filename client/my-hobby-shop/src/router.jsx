@@ -25,6 +25,7 @@ const router = createBrowserRouter([
             {path: "/menu/cart/product/:id", element: <MainProductCard/>},
             {path: "/categories", element: <CategoryPage/>},
             {path: "/brands", element: <BrandsPage/>},
+            {path: "/brands/catalog/:id", element: <CatalogPage/>},
             {path: "/authorization", element: <LoginPage/>},
             {path: "/registration", element: <Registration/>},
             {path: "/menu",
