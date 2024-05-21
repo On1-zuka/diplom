@@ -12,7 +12,7 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        const response = await axios.post('http://localhost:5000/api/users/login', formData, {
+        const response = await axios.post(`${process.env.API_BASE_URL}/users/login`, formData, {
           withCredentials: true, // Позволяет передавать cookies в запросе
         });
         navigate('/menu/profile'); // Переход на страницу профиля

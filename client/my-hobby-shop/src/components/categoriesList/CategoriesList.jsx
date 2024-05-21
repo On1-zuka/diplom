@@ -9,7 +9,7 @@ export default function CategoriesList() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/categories');
+                const response = await axios.get(`${process.env.API_BASE_URL}/categories`);
                 const sortedCategory = response.data.sort((a, b) => a.id - b.id).slice(0, 8);
                 setCategories(sortedCategory); 
             } catch (error) {

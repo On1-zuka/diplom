@@ -23,14 +23,14 @@ export default function Header() {
                     <nav className={styles.menu__up}>
                         <ul className={styles.menu_up__list}>
                             <li className={styles.menu_up__list_item}>
-                                <a href="#" className={styles.menu_up__list_link}>
+                                <Link to='/delivery' className={styles.menu_up__list_link}>
                                     Доставка
-                                </a>
+                                </Link>
                             </li>
                             <li className={styles.menu_up__list_item}>
-                                <a href="#" className={styles.menu_up__list_link}>
+                                <Link to='/payment' className={styles.menu_up__list_link}>
                                     Оплата
-                                </a>
+                                </Link>
                             </li>
                             <li className={styles.menu_up__list_item}>
                                 <a href="#" className={styles.menu_up__list_link}>
@@ -59,11 +59,11 @@ export default function Header() {
                             <SearchIcon />
                         </button>
                         <input
-                             placeholder="Поиск товаров..."
-                             type="text"
-                             className={styles.search__bar__txt}
-                             value={searchQuery}
-                             onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Поиск товаров..."
+                            type="text"
+                            className={styles.search__bar__txt}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
                     <nav className={styles.menu}>
@@ -75,13 +75,7 @@ export default function Header() {
                                 <PersonIcon />
                                 Профиль
                             </li>
-                            <li
-                                className={styles.menu__list__items}
-                                onClick={() => navigate("/card")}
-                            >
-                                <FavoriteIcon />
-                                Избранное
-                            </li>
+                           
                             <li
                                 className={styles.menu__list__items}
                                 onClick={() => navigate("/menu/cart")}

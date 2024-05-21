@@ -12,6 +12,7 @@ const User = sequelize.define('user', {
     email: { type: DataTypes.STRING, unique: true },
     password: { type: DataTypes.STRING },
     scores: {type: DataTypes.INTEGER, defaultValue: 20},
+    role: {type: DataTypes.STRING, defaultValue: 'buyer' }
 })
 
 const Cart = sequelize.define('cart', {

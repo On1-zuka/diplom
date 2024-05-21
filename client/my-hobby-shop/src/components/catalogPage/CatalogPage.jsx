@@ -5,10 +5,10 @@ import axios from 'axios';
 import { Pagination, Slider } from "@mui/material";
 import Checkbox from '../../common/checkboxWithText/checkbox';
 import { ToastContainer } from 'react-toastify';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 export default function CatalogPage() {
-const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState([]);
     const [maxPrice, setMaxPrice] = useState(100);
     const [priceRange, setPriceRange] = useState([0, maxPrice]);
     const [sortOption, setSortOption] = useState("");
@@ -21,6 +21,7 @@ const [products, setProducts] = useState([]);
     const [selectedBrands, setSelectedBrands] = useState([]);
     const [inStock, setInStock] = useState("");
     const { id } = useParams();
+    const location = useLocation();
 
     useEffect(() => {
         fetchCategories();
@@ -34,11 +35,14 @@ const [products, setProducts] = useState([]);
 
     const fetchData = async () => {
         try {
-            const brandIds = id ? [id, ...selectedBrands] : selectedBrands;
+            const isBrandPath = location.pathname.includes('brands/catalog');
+            const brandIds = isBrandPath ? (id ? [id, ...selectedBrands] : selectedBrands) : [];
+            const categoriesId = !isBrandPath ? (id ? [id, ...selectedCategories] : selectedCategories) : [];
+            
             const response = await axios.get(`${process.env.API_BASE_URL}/products`, {
                 params: {
                     brandId: brandIds.join(','),
-                    categoryId: selectedCategories.join(','),
+                    categoryId: categoriesId.join(','),
                     limit,
                     page,
                     minPrice: priceRange[0],
@@ -46,6 +50,7 @@ const [products, setProducts] = useState([]);
                     inStock,
                 },
             });
+
             setProducts(response.data.rows);
             setTotalPages(Math.ceil(response.data.count / limit));
         } catch (error) {
@@ -131,7 +136,7 @@ const [products, setProducts] = useState([]);
     };
 
     const applyFilters = () => {
-        setPage(1) 
+        setPage(1);
         fetchData();
     };
 

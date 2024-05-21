@@ -12,22 +12,26 @@ import Cart from "./components/cartPage/CartPage"
 import Error from "./components/errorPage/ErrorPage"
 import CatalogProductCard from "./components/catalogProductCard/CatalogProductCard";
 import MainProductCard from "./components/mainProductCard/MainProductCard";
-
-
+import Delivery from "./page/delivery/Delivery";
+import Pay from "./page/pay/Pay";
 
 const router = createBrowserRouter([
     {
         element: <App/>,
         children:[
             {path: "/", element: <HomePage/>},
+            {path: "/product/:id", element: <MainProductCard/>},
             {path: "/catalog", element: <CatalogPage/>},
             {path: "/catalog/product/:id", element: <MainProductCard/>},
             {path: "/menu/cart/product/:id", element: <MainProductCard/>},
             {path: "/categories", element: <CategoryPage/>},
+            {path: "/categories/catalog/:id", element: <CatalogPage/>},
             {path: "/brands", element: <BrandsPage/>},
             {path: "/brands/catalog/:id", element: <CatalogPage/>},
             {path: "/authorization", element: <LoginPage/>},
             {path: "/registration", element: <Registration/>},
+            {path: "/delivery", element: <Delivery/>},
+            {path: "/payment", element: <Pay/>},
             {path: "/menu",
                 element: <SelectionMenu/>,
                 children:[

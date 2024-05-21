@@ -113,7 +113,6 @@ export default function CartPage() {
             return;
         }
 
-        // Устанавливаем текущие дату и время для самовывоза, если не указаны
         const currentDate = moment();
         const orderDate = deliveryMethod === 'pickup' && !selectedDate ? currentDate.format('DD.MM.YYYY') : selectedDate;
         const orderTime = deliveryMethod === 'pickup' && !selectedTime ? currentDate.format('HH:mm') : selectedTime;
