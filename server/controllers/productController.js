@@ -12,7 +12,7 @@ class ProductController {
                 return next(ApiError.badRequest("Изображение не было загружено"));
             }
 
-            const { brandId, categoryId, name, price, description, discount, country, purpose, article, quantity_product, set } = req.body;
+            const { brandId, categoryId, name, price, description, discount, country, purpose, article, quantity_product} = req.body;
             const { img } = req.files;
 
             const parsedPrice = parseFloat(price);
@@ -50,7 +50,6 @@ class ProductController {
                 quantity_product: parsedQuantity,
                 brandId,
                 categoryId,
-                set
             });
 
             if (!product) {
