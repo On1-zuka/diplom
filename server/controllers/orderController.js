@@ -7,40 +7,41 @@ class OrderController {
     async fillingOrder(req, res, next) {
         const jwtCookie = req.cookies.token;
         const { orderDate, pickup, orderTime, finalPrice, usePoints } = req.body;
-
+    
         if (!orderDate || pickup === undefined || !orderTime || !finalPrice) {
             return next(ApiError.badRequest('Необходимо указать все данные для заявки'));
         }
-
+    
         try {
             const decoded = jwt.verify(jwtCookie, process.env.SECRET_KEY);
             const userId = decoded.id;
-
+    
             if (!userId || typeof userId !== 'number') {
                 return next(ApiError.badRequest('Не удалось получить id пользователя из JWT'));
             }
-
+    
             const formattedOrderDate = orderDate.split('.').reverse().join('-');
-
+    
             const isPickup = pickup === true;
             let formattedOrderTime = orderTime;
             let totalPrice = parseFloat(finalPrice);
-
+    
             if (isPickup) {
                 formattedOrderTime = null;
             } else {
                 totalPrice += 10.00;
             }
-
+    
             const user = await User.findByPk(userId);
             if (!user) {
                 return next(ApiError.notFound('Пользователь не найден'));
             }
-
+    
             let userScores = user.scores;
             const priceThreshold = 20.00;
             const bonusPointsPerAmount = 2;
-
+            let scoresUsed = 0;
+    
             if (usePoints) {
                 if (totalPrice >= priceThreshold) {
                     const maxScoresToUse = Math.floor(totalPrice / 2);
@@ -48,11 +49,12 @@ class OrderController {
                     const scoresAmountToUse = scoresToUse * 0.5;
                     totalPrice -= scoresAmountToUse;
                     userScores -= scoresToUse;
+                    scoresUsed = scoresToUse;
                     await user.update({ scores: userScores });
-
+    
                     const spentAmount = totalPrice + scoresAmountToUse;
                     const bonusPointsEarned = Math.floor(spentAmount / 10) * bonusPointsPerAmount;
-
+    
                     userScores += bonusPointsEarned;
                     await user.update({ scores: userScores });
                 } else {
@@ -63,7 +65,7 @@ class OrderController {
                 userScores += bonusPointsEarned;
                 await user.update({ scores: userScores });
             }
-
+    
             const updatedCart = await Cart.update(
                 {
                     orderDate: formattedOrderDate,
@@ -78,15 +80,20 @@ class OrderController {
                     plain: true,
                 }
             );
-
+    
             if (updatedCart[0] === 0) {
                 return next(ApiError.notFound('Заказ с указанным ID не найден'));
             }
-
-            return res.json(updatedCart[1]);
+    
+            return res.json({
+                updatedCart: updatedCart[1],
+                finalPrice: totalPrice.toFixed(2),
+                scoresUsed
+            });
         } catch (error) {
             return next(ApiError.badRequest(error.message));
         }
     }
+    
 }
 module.exports = new OrderController;

@@ -16,12 +16,12 @@ class EmailController {
   }
 
   async sendEmailAdmin(req, res, next) {
-    const { subject, text } = req.body;
+    const { subject, html } = req.body;
     const mailOptions = {
       from: 'myhobbya75@gmail.com',
       to: 'myhobbya75@gmail.com',
       subject,
-      text,
+      html,
     };
 
     this.transporter.sendMail(mailOptions)
@@ -33,12 +33,12 @@ class EmailController {
   }
 
   async sendEmailUser(req, res, next) {
-    const { to, subject, text } = req.body;
+    const { to, subject, html } = req.body;
     const mailOptions = {
       from: 'myhobbya75@gmail.com',
       to,
       subject,
-      text,
+      html,
     };
 
     this.transporter.sendMail(mailOptions)

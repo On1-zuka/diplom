@@ -24,6 +24,7 @@ export default function CartPage() {
         address: ''
     });
     const [cartEmpty, setCartEmpty] = useState(true);
+    const [productQuantities, setProductQuantities] = useState({});
 
     const handleUserDataChange = (field, value) => {
         setUserData({ ...userData, [field]: value });
@@ -71,6 +72,13 @@ export default function CartPage() {
                 const response = await axios.get(`${process.env.API_BASE_URL}/cart`, { withCredentials: true });
                 setProductCard(response.data);
                 setCartEmpty(response.data.length === 0);
+
+                // Initialize product quantities
+                const quantities = {};
+                response.data.forEach(product => {
+                    quantities[product.id] = product.quantity;
+                });
+                setProductQuantities(quantities);
             } catch (error) {
                 console.error('Error fetching cart items:', error);
             }
@@ -78,7 +86,6 @@ export default function CartPage() {
 
         fetchCartItems();
     }, []);
-    
 
     useEffect(() => {
         setTotalPrice(calculateTotalPrice);
@@ -127,7 +134,11 @@ export default function CartPage() {
 
         try {
             const response = await axios.post(`${process.env.API_BASE_URL}/order/create-order`, orderData, { withCredentials: true });
-            console.log('Order submitted successfully:', response.data);
+            const { finalPrice } = response.data;
+            const {scoresUsed} = response.data;
+
+            // Send email after successful order creation
+            await sendEmail(userData.email,scoresUsed, productCard, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities);
         } catch (error) {
             console.error('Error submitting order:', error);
         }
@@ -159,6 +170,75 @@ export default function CartPage() {
     const handleToggle = () => {
         setIsChecked(!isChecked);
     };
+
+    const sendEmail = async (email,scoresUsed, products, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities) => {
+        const productDetails = `
+            <table style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Название продукта</th>
+                        <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Количество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${products.map(product => `
+                        <tr>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${product.product.name}</td>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${productQuantities[product.id]} шт.</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+
+        const deliveryDetails = deliveryMethod === 'courier' ? `
+            <p>Способ доставки: Курьер</p>
+            <p>Дата доставки: ${orderDate}</p>
+            <p>Время доставки: ${orderTime}</p>
+            <p>Адрес доставки: ${userData.address}</p>
+        ` : `
+            <p>Способ доставки: Самовывоз</p>
+        `;
+
+        const emailText = `
+            <p>ФИО: ${userData.surname} ${userData.name} ${userData.patronymic} | Номер телефона: ${userData.phone}</p>
+            <p>Ваш заказ:</p>
+            ${productDetails}
+            ${deliveryDetails}
+            <p>Способ оплаты: ${paymentMethod === 'receipt' ? 'Оплата наличными при получении' : 'Оплата картой при получении'}</p>
+            <p>Кол-во потраченных баллов: ${scoresUsed}</p>
+            <p><strong>Итоговая цена: ${finalPrice} р</strong></p>
+        `;
+
+        try {
+            await axios.post(`${process.env.API_BASE_URL}/email/send-email-user`, {
+                to: email,
+                subject: 'Подтверждение заказа',
+                html: emailText,
+            });
+            console.log('Email sent successfully');
+        } catch (error) {
+            console.error('Error sending email:', error);
+        }
+
+        try{
+            await axios.post(`${process.env.API_BASE_URL}/email/send-email-admin`, {
+                subject: 'Заказ',
+                html: emailText,
+            });
+        }catch(error){
+            console.error('Error sending email:', error);
+        }
+
+    };
+
+    const handleQuantityChange = (productId, newQuantity) => {
+        setProductQuantities(prevQuantities => ({
+            ...prevQuantities,
+            [productId]: newQuantity
+        }));
+    };
+
 
     return (
         <div className={styles.dataMenu}>

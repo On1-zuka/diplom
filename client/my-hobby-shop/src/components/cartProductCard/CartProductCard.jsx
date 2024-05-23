@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-export default function CartProductCard({ product, productId, updateProductList, updateTotalPrice }) {
+export default function CartProductCard({ product, productId, updateProductList, updateTotalPrice, onQuantityChange }) {
     const [showToast, setShowToast] = useState(false);
     const [inputQuantity, setInputQuantity] = useState(product.quantity);
     const [totalPrice, setTotalPrice] = useState((product.product.price * product.quantity).toFixed(2));
@@ -22,8 +22,6 @@ export default function CartProductCard({ product, productId, updateProductList,
 
     useEffect(() => {
         if (product.quantity > maxQuantity) {
-            //setInputQuantity(maxQuantity);
-            //setDisplayQuantity(maxQuantity);
             calculateTotalPrice(maxQuantity);
         }
     }, [product.quantity, maxQuantity]);
@@ -54,8 +52,10 @@ export default function CartProductCard({ product, productId, updateProductList,
             setDisplayQuantity(newQuantity);
             calculateTotalPrice(newQuantity);
             updateTotalPrice(prevTotalPrice => prevTotalPrice + product.product.price);
+            onQuantityChange(productId, newQuantity); // Notify parent of quantity change
         }
     };
+
     const handleDecrement = () => {
         if (inputQuantity > 1) {
             const newQuantity = inputQuantity - 1;
@@ -70,8 +70,10 @@ export default function CartProductCard({ product, productId, updateProductList,
             if (newQuantity < product.product.quantity_product) {
                 setShowQuantityMessage(false);
             }
+            onQuantityChange(productId, newQuantity); // Notify parent of quantity change
         }
     };
+
     const calculateTotalPrice = (newQuantity) => {
         const newTotalPrice = (product.product.price * newQuantity).toFixed(2);
         setTotalPrice(newTotalPrice);
@@ -86,6 +88,7 @@ export default function CartProductCard({ product, productId, updateProductList,
                 setDisplayQuantity(newValue);
                 calculateTotalPrice(newValue);
                 updateTotalPrice(product.product.price * newValue);
+                onQuantityChange(productId, newValue); // Notify parent of quantity change
             } else {
                 return;
             }
