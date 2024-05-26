@@ -8,17 +8,35 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import CallIcon from '@mui/icons-material/Call';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-import WelcomeEmail from '../../email/welcomeEmail/WelcomeEmail';
-import ReactDOMServer from 'react-dom/server';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function RegistrationPage() {
     const [step, setStep] = useState(1);
-    const [regForm, setRegForm] = useState({ login: '', email: '', password: '', name: '', surname: '', patronymic: '', address: '', phone: '' });
+    const [regForm, setRegForm] = useState({ login: '', email: '', password: '', confirmPassword: '', name: '', surname: '', patronymic: '', address: '', phone: '' });
     const [formData, setFormData] = useState({
         to: '',
         subject: '',
         text: '',
       });
+
+    const emailValidator = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
+    };
+
+    const handleNextStep = () => {
+        if (step === 1) {
+            if (!emailValidator(regForm.email)) {
+                toast.error('Некорректный формат email');
+                return;
+            }
+            if (regForm.password !== regForm.confirmPassword) {
+                toast.error('Пароли не совпадают');
+                return;
+            }
+        }
+        setStep(step + 1);
+    };
 
     async function registration(e) {
         e.preventDefault();
@@ -27,23 +45,21 @@ export default function RegistrationPage() {
             console.log(response.data);
             toast.success('Регистрация прошла успешно!');
             sendEmail();
-        } catch (error) {
-            console.error('Registration failed:', error);
-        }
+        }  catch (error) {
+            if (error.response && error.response.data && error.response.data.message) {
+              toast.error(`Ошибка авторизации: ${error.response.data.message}`);
+            } else {
+              toast.error('Ошибка авторизации: неизвестная ошибка');
+            }
+        } 
     }
-
-    const handleNextStep = () => {
-        setStep(step + 1);
-    };
 
     const sendEmail = async () => {
         try {
-           //const emailComponent = <WelcomeEmail login={regForm.email} password={regForm.password} />;
-            //const emailText = ReactDOMServer.renderToStaticMarkup(emailComponent);
             const updatedFormData = {
                 to: regForm.email,
                 subject: 'Добро пожаловать!',
-                text: 'aaa',
+                html: '',
             };
     
             setFormData(updatedFormData);
@@ -61,7 +77,7 @@ export default function RegistrationPage() {
             <section className={styles.entryWindow}>
                 <div className={styles.container}>
                     {step === 1 && (
-                        <form method='post' onSubmit={registration} className={styles.entryWindow__wrapper}>
+                        <form className={styles.entryWindow__wrapper}>
                             <div className={styles.inputTitle}>
                                 <h1>Регистрация</h1>
                                 <div className={styles.inputBox}>
@@ -83,11 +99,14 @@ export default function RegistrationPage() {
                                     <VpnKeyIcon className={styles.PasswordIcon} />
                                 </div>
                                 <div className={styles.inputBox}>
-                                    <input type="password" placeholder='Повторный пароль' />
+                                    <input type="password" placeholder='Повторный пароль' value={regForm.confirmPassword} onChange={(e) => {
+                                        setRegForm({ ...regForm, confirmPassword: e.target.value });
+                                    }} />
                                     <VpnKeyIcon className={styles.PasswordIcon} />
                                 </div>
                             </div>
                             <button type="button" className={styles.btn} onClick={handleNextStep}>Далее</button>
+                            <ToastContainer />
                         </form>
                     )}
                     {step === 2 && (

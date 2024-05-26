@@ -32,7 +32,7 @@ export default function CatalogProductCard({ product }) {
             })
             .catch(error => {
                 setShowToast(false);
-                toast.error("Упс, что-то пошло не так");
+                toast.error("Упс, что-то пошло не так.\n Проверьте, вы авторизованы.\n Если не помогло, то напишите нам!");
             });
     }
     return (

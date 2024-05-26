@@ -24,10 +24,13 @@ const Profile = () => {
                 withCredentials: true,
             });
             toast.success('Данные пользователя успешно сохранены');
-        } catch (error) {
-            toast.error('Ошибка при сохранении данных пользователя');
-            console.error('Ошибка при сохранении данных пользователя:', error);
-        }
+        }catch (error) {
+            if (error.response && error.response.data && error.response.data.message) {
+                toast.error('Ошибка при сохранении данных пользователя');
+            } else {
+              toast.error('неизвестная ошибка');
+            }
+        } 
     };
 
     return (

@@ -12,6 +12,7 @@ const generateJwt = (id, email, login, role) => {
 }
 
 class UserController {
+    
     async registration(req, res, next) {
         const { login, name, surname, patronymic, address, email, password, phone } = req.body;
 
@@ -134,6 +135,10 @@ class UserController {
             if (patronymic) user.patronymic = patronymic;
             if (phone) user.phone = phone;
             if (address) user.address = address;
+
+            if ( !name || !surname || !address  || !patronymic || !phone) {
+                return next(ApiError.badRequest('Необходимо указать все данные для регистрации'));
+            }
 
             await user.save();
 

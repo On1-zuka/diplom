@@ -36,7 +36,7 @@ export default function MainProductCard() {
             .catch(error => {
                 console.error('Ошибка при добавлении товара в корзину:', error);
                 setShowToast(false);
-                toast.error("Упс, что-то пошло не так");
+                toast.error("Упс, что-то пошло не так.\n Проверьте, вы авторизованы.\n Если не помогло, то напишите нам!");
             });
     };
 
