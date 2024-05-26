@@ -3,7 +3,7 @@ import styles from "./Header.module.css";
 import logo from "../../assets/logo.png";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Modal from "../modal/Modal";
 import { Link, useNavigate } from "react-router-dom";
@@ -70,12 +70,18 @@ export default function Header() {
                         <ul className={styles.menu__list}>
                             <li
                                 className={styles.menu__list__items}
-                                onClick={() => navigate("/authorization")}
+                                onClick={() => navigate("/menu/profile")}
                             >
                                 <PersonIcon />
                                 Профиль
                             </li>
-                           
+                            <li
+                                className={styles.menu__list__items}
+                                onClick={() => navigate("/authorization")}
+                            >
+                                < AdminPanelSettingsIcon/>
+                                Aдмин
+                            </li>
                             <li
                                 className={styles.menu__list__items}
                                 onClick={() => navigate("/menu/cart")}

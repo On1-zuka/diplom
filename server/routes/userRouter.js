@@ -9,5 +9,6 @@ router.post('/login',userController.login)
 router.get('/profile', userController.profile)
 router.post('/logout', userController.logout);
 router.put('/edit', userController.editProfile);
+router.get('/check', userController.check);
 
 module.exports = router

@@ -72,8 +72,6 @@ export default function CartPage() {
                 const response = await axios.get(`${process.env.API_BASE_URL}/cart`, { withCredentials: true });
                 setProductCard(response.data);
                 setCartEmpty(response.data.length === 0);
-
-                // Initialize product quantities
                 const quantities = {};
                 response.data.forEach(product => {
                     quantities[product.id] = product.quantity;
@@ -137,7 +135,6 @@ export default function CartPage() {
             const { finalPrice } = response.data;
             const {scoresUsed} = response.data;
 
-            // Send email after successful order creation
             await sendEmail(userData.email,scoresUsed, productCard, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities);
         } catch (error) {
             console.error('Error submitting order:', error);

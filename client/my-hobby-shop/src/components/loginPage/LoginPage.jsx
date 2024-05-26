@@ -1,25 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './LoginPage.module.css';
 import EmailIcon from '@mui/icons-material/Email';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import { useAuth } from '../../context/AuthContext';
+import { useUser } from '../../context/UserContext';
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const navigate = useNavigate();
+    const {setUser} = useUser();
+    const {login, isAuthenticated} = useAuth();
   
+    useEffect(() => {
+      if(isAuthenticated){
+        navigate('/menu/profile')
+      }
+    }, [isAuthenticated])
+    
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
         const response = await axios.post(`${process.env.API_BASE_URL}/users/login`, formData, {
-          withCredentials: true, // Позволяет передавать cookies в запросе
+          withCredentials: true, 
         });
-        navigate('/menu/profile'); // Переход на страницу профиля
+        if(response.data){
+          setUser(response.data.user);
+          login();
+        }
+        
       } catch (error) {
         console.error('Ошибка авторизации:', error);
       }
     };
+
+
 
   return (
     <main className={styles.main}>

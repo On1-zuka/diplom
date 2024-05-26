@@ -36,7 +36,7 @@ class UserController {
 
             if (user) {
                 const cart = await Cart.create({ userId: user.id });
-                const token = generateJwt(user.id, user.email, user.login, user.role); // Предполагается, что роль установлена по умолчанию в модели
+                const token = generateJwt(user.id, user.email, user.login, user.role);
                 return res.json({ token });
             } else {
                 return next(ApiError.unauthorized('Ошибка создания пользователя'));
@@ -61,13 +61,12 @@ class UserController {
 
             const token = generateJwt(user.id, user.email, user.login, user.role);
 
-            res.cookie('token', token, {
+            return res.cookie('token', token, {
                 httpOnly: true,
                 maxAge: 24 * 60 * 60 * 1000,
                 domain: 'localhost',
-            });
+            }).json({ user, message: 'Авторизация прошла успешно' });
 
-            return res.json({ message: 'Авторизация прошла успешно' });
         } catch (err) {
             return next(ApiError.internal('Внутренняя ошибка сервера'));
         }
@@ -141,6 +140,25 @@ class UserController {
             return res.json({ message: 'Данные пользователя успешно обновлены', user });
         } catch (err) {
             return next(ApiError.internal('Внутренняя ошибка сервера'));
+        }
+    }
+    async check(req, res, next) {
+        try {
+            const token = req.cookies.token;
+            if (!token) {
+                return next(ApiError.unauthorized('Токен не предоставлен'));
+            }
+            const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+            const userId = decodedToken.id;
+
+            const user = await User.findByPk(userId);
+            if (!user) {
+                return next(ApiError.unauthorized('Пользователь не найден'));
+            }
+            console.log(user)
+            return res.json({...user.dataValues, password:undefined});
+        } catch (err) {
+            return next(ApiError.unauthorized('Невалидный токен'));
         }
     }
 }

@@ -21,8 +21,7 @@ export default function Footer(){
                     </ul>
                     <ul className={styles.menu__list}>
                         <li className={styles.footer__menu__item}><p className={styles.footer__menu__title}>Выгодно</p></li>
-                        <li className={styles.footer__menu__item}><a href="#" className={styles.footer__menu__link}>Акции</a></li>
-                        <li className={styles.footer__menu__item}><a href="#" className={styles.footer__menu__link}>Скидки</a></li>
+                        <li className={styles.footer__menu__item}><a href="#" className={styles.footer__menu__link}>Баллы</a></li>
                     </ul>
                     <ul className={styles.menu__list}>
                         <li className={styles.footer__menu__item}><p className={styles.footer__menu__title}>Обратная связь</p></li>

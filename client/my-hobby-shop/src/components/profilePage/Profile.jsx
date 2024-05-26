@@ -3,43 +3,20 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useState, useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
+import { useUser } from "../../context/UserContext";
 
 const Profile = () => {
     const [isEditMode, setIsEditMode] = useState(false);
-    const [userData, setUserData] = useState({
-        id: '',
-        login: '',
-        email: '',
-        name: '',
-        surname: '',
-        patronymic: '',
-        phone: '',
-        address: ''
-    });
+    const {user, setUser} = useUser();
+    const [userData, setUserData] = useState(user)
+
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`${process.env.API_BASE_URL}/users/profile`, {
-                    withCredentials: true,
-                });
-                const user = response.data.user;
-                setUserData({
-                    id: user.id,
-                    login: user.login,
-                    email: user.email,
-                    name: user.name,
-                    surname: user.surname,
-                    patronymic: user.patronymic,
-                    phone: user.phone,
-                    address: user.address,
-                });
-            } catch (error) {
-                console.error('Ошибка при получении данных пользователя:', error);
-            }
-        };
-        fetchData();
-    }, []);
+        if(user){
+            setUserData(user)
+        }
+    }, [user]);
+    console.log(userData)
 
     const saveUserData = async () => {
         try {

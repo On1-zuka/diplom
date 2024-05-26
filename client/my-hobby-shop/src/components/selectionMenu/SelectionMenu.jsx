@@ -7,6 +7,8 @@ import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
+import { useUser } from '../../context/UserContext';
 
 export default function SelectionMenu(){
     const navigate = useNavigate();
@@ -15,6 +17,8 @@ export default function SelectionMenu(){
         login: '',
         email: '',
     });
+    const {logout} = useAuth();
+    const {setUser} = useUser();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -36,11 +40,13 @@ export default function SelectionMenu(){
         fetchData();
     }, []);
 
-    const logout = async () => {
+    const handleLogout = async () => {
         try {
             await axios.post(`${process.env.API_BASE_URL}/users/logout`, null, {
                 withCredentials: true,
             });
+            logout();
+            setUser(null);
             toast.success('Вы успешно вышли из аккаунта!', {
                 position: 'top-right',
                 autoClose: 3000,
@@ -72,7 +78,7 @@ export default function SelectionMenu(){
                                     <li onClick={()=>navigate('/menu/profile')}><PersonIcon />Мой профиль </li>
                                     <li onClick={()=>navigate('/menu/cart')}><ShoppingCartIcon />Корзина</li>
                                     <li><FavoriteIcon />Избранное</li>
-                                    <li onClick={logout}><ExitToAppIcon />Выход из аккаунта</li>
+                                    <li onClick={handleLogout}><ExitToAppIcon />Выход из аккаунта</li>
                                 </ul>
                             </div>
                             <ToastContainer />
