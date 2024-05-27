@@ -72,7 +72,7 @@ class CartController {
                 include: [
                     {
                         model: Products,
-                        attributes: ['id','name', 'img', 'quantity_product', 'price'],
+                        attributes: ['id', 'name', 'img', 'quantity_product', 'price'],
                     },
                 ],
             });
@@ -161,5 +161,43 @@ class CartController {
             return next(ApiError.badRequest(e.message));
         }
     }
+    async clearCart(req, res, next) {
+        try {
+            const jwtCookie = req.cookies.token;
+            if (!jwtCookie) {
+                return next(ApiError.badRequest('JWT не найден в куках'));
+            }
+            const decoded = jwt.verify(jwtCookie, process.env.SECRET_KEY);
+            const userId = decoded.id;
+            if (!userId) {
+                return next(ApiError.badRequest('Не удалось получить id пользователя из JWT'));
+            }
+            const cart = await Cart.findOne({ where: { userId } });
+            if (!cart) {
+                return next(ApiError.notFound('Корзина не найдена'));
+            }
+            const cartItems = await Cart_product.findAll({ where: { cartId: cart.id } });
+            if (!cartItems || cartItems.length === 0) {
+                return next(ApiError.notFound('Товары в корзине не найдены'));
+            }
+
+            for (const cartItem of cartItems) {
+                const product = await Products.findOne({ where: { id: cartItem.productId } });
+                if (product) {
+                    product.quantity_product -= cartItem.quantity;
+                    if (product.quantity_product < 0) {
+                        product.quantity_product = 0; 
+                    }
+                    await product.save();
+                }
+                await cartItem.destroy();
+            }
+
+            return res.json({ message: 'Все товары успешно удалены из корзины и количество товаров обновлено' });
+        } catch (e) {
+            return next(ApiError.badRequest(e.message));
+        }
+    }
+
 }
 module.exports = new CartController;

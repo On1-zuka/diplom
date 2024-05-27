@@ -21,6 +21,7 @@
 }
 .footer__menu__item{
     margin: 0 0 15px 0px;
+    font-weight: 34px;
 }
 .footer__bottom{
     display: flex;

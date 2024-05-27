@@ -153,14 +153,8 @@ export default function CatalogPage() {
         setPriceRange([priceRange[0], maxPriceValue]);
     };
 
-    const handleResetFilter = () => {
-        setSelectedCategories([]);
-        setSelectedBrands([]);
-        setPriceRange([0, maxPrice]);
-        setInStock("");
-        setSortOption("");
-        setPage(1);
-        fetchData();
+    const updatePage = () => {
+        window.location.reload();
     };
 
     return (
@@ -171,7 +165,7 @@ export default function CatalogPage() {
                         <form className={styles.fromCatalog}>
                             <div className={styles.filter}>
                                 <div className={styles.filterCategory}>
-                                    <button type="reset" className={styles.hideFilter} onClick={handleResetFilter}>
+                                    <button type="reset" className={styles.hideFilter} onClick={updatePage}>
                                         Сбросить фильтр(ы) и сортировку
                                     </button>
                                     <div className={styles.category}>

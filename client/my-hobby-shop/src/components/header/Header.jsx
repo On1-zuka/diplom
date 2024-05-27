@@ -33,19 +33,17 @@ export default function Header() {
                                 </Link>
                             </li>
                             <li className={styles.menu_up__list_item}>
-                                <a href="#" className={styles.menu_up__list_link}>
+                                <Link to='/about' className={styles.menu_up__list_link}>
                                     О нас
-                                </a>
+                                </Link>
                             </li>
                             <li className={styles.menu_up__list_item}>
-                                <a href="#" className={styles.menu_up__list_link}>
+                                <Link to='/contacts' className={styles.menu_up__list_link}>
                                     Контакты
-                                </a>
+                                </Link>
                             </li>
                             <li className={styles.menu_up__list_item}>
-                                <a href="#" className={styles.menu_up__list_link}>
-                                    +375 (44) 788 20 35
-                                </a>
+                                +375 (44) 788 20 35
                             </li>
                         </ul>
                     </nav>
@@ -77,9 +75,9 @@ export default function Header() {
                             </li>
                             <li
                                 className={styles.menu__list__items}
-                                onClick={() => navigate("/authorization")}
+                                onClick={() => navigate("/end")}
                             >
-                                < AdminPanelSettingsIcon/>
+                                < AdminPanelSettingsIcon />
                                 Aдмин
                             </li>
                             <li

@@ -12,7 +12,7 @@ export default function Delivery() {
                     <br />
                     <p>Также возможен самовывоз из магазинов MyHobby (стоимость - бесплатно):</p>
                     <br />
-                    <p>г. Минск, ул. Казинца 91</p>
+                    <p className={styles.last}>г. Минск, ул. Казинца 91</p>
                 </div>
             </div>
         </div>

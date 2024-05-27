@@ -4,6 +4,8 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import styles from './CartPage.module.css';
 import moment from 'moment';
+import ModalCart from '../modalCart/ModalCart';
+import { useNavigate } from 'react-router-dom';
 
 export default function CartPage() {
     const [productCard, setProductCard] = useState([]);
@@ -25,11 +27,15 @@ export default function CartPage() {
     });
     const [cartEmpty, setCartEmpty] = useState(true);
     const [productQuantities, setProductQuantities] = useState({});
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
 
+    // Функция для обновления данных пользователя
     const handleUserDataChange = (field, value) => {
         setUserData({ ...userData, [field]: value });
     };
 
+    // Запрос данных пользователя при монтировании компонента
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -54,10 +60,12 @@ export default function CartPage() {
         fetchData();
     }, []);
 
+    // Функция для обновления списка продуктов
     const updateProductList = useCallback((productId) => {
         setProductCard(prevProducts => prevProducts.filter(product => product.id !== productId));
     }, []);
 
+    // Вычисление общей стоимости товаров
     const calculateTotalPrice = useMemo(() => {
         let totalPrice = 0;
         productCard.forEach((product) => {
@@ -66,6 +74,7 @@ export default function CartPage() {
         return totalPrice;
     }, [productCard]);
 
+    // Запрос данных корзины при монтировании компонента
     useEffect(() => {
         const fetchCartItems = async () => {
             try {
@@ -85,10 +94,12 @@ export default function CartPage() {
         fetchCartItems();
     }, []);
 
+    // Обновление общей стоимости товаров при изменении списка товаров
     useEffect(() => {
         setTotalPrice(calculateTotalPrice);
     }, [calculateTotalPrice]);
 
+    // Обработчики выбора метода доставки и оплаты
     const handleDivClickDelivery = (method) => {
         setDeliveryMethod(method);
     };
@@ -97,10 +108,12 @@ export default function CartPage() {
         setPaymentMethod(method);
     };
 
+    // Обработчик изменения времени доставки
     const handleTimeChange = (timeString) => {
         setSelectedTime(timeString);
     };
 
+    // Обработчик завершения оформления заказа
     const handlePayment = async (event) => {
         event.preventDefault();
         if (deliveryMethod !== 'courier' && deliveryMethod !== 'pickup') {
@@ -131,20 +144,45 @@ export default function CartPage() {
         };
 
         try {
+            // Создание заказа
             const response = await axios.post(`${process.env.API_BASE_URL}/order/create-order`, orderData, { withCredentials: true });
             const { finalPrice } = response.data;
-            const {scoresUsed} = response.data;
+            const { scoresUsed } = response.data;
 
-            await sendEmail(userData.email,scoresUsed, productCard, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities);
+            // Отправка email пользователю и администратору
+            await sendEmail(userData.email, scoresUsed, productCard, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities);
+
+            // Удаление всех товаров из корзины и обновление количества товаров на складе
+            await clearCart();
+
+            toast.success('Заказ успешно оформлен');
+            setIsModalOpen(true);
+
+            setTimeout(() => {
+                navigate('/')
+            }, 8000);
+
         } catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
-              toast.error(` ${error.response.data.message}`);
+                toast.error(` ${error.response.data.message}`);
             } else {
-              toast.error('Неизвестная ошибка');
+                toast.error('Неизвестная ошибка');
             }
         }
     };
 
+    // Запрос для удаления всех товаров из корзины и обновления количества товаров на складе
+    const clearCart = async () => {
+        try {
+            await axios.delete(`${process.env.API_BASE_URL}/cart/clearCart`, { withCredentials: true });
+            setProductCard([]);
+            setCartEmpty(true);
+        } catch (error) {
+            console.error('Ошибка при очистке корзины:', error);
+        }
+    };
+
+    // Получение даты следующего дня, исключая воскресенье
     const getNextDay = () => {
         const currentDate = new Date();
         let nextDay = new Date(currentDate);
@@ -155,6 +193,7 @@ export default function CartPage() {
         return nextDay.toISOString().split('T')[0];
     };
 
+    // Получение даты через 5 дней, исключая воскресенья
     const getNextFiveDays = () => {
         const currentDate = new Date();
         let nextFiveDays = new Date(currentDate);
@@ -168,11 +207,13 @@ export default function CartPage() {
         return nextFiveDays.toISOString().split('T')[0];
     };
 
+    // Переключение использования баллов
     const handleToggle = () => {
         setIsChecked(!isChecked);
     };
 
-    const sendEmail = async (email,scoresUsed, products, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities) => {
+    // Отправка email пользователю и администратору
+    const sendEmail = async (email, scoresUsed, products, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities) => {
         const productDetails = `
             <table style="width:100%; border-collapse: collapse;">
                 <thead>
@@ -222,24 +263,23 @@ export default function CartPage() {
             console.error('Error sending email:', error);
         }
 
-        try{
+        try {
             await axios.post(`${process.env.API_BASE_URL}/email/send-email-admin`, {
                 subject: 'Заказ',
                 html: emailText,
             });
-        }catch(error){
+        } catch (error) {
             console.error('Error sending email:', error);
         }
-
     };
 
+    // Обработчик изменения количества продукта
     const handleQuantityChange = (productId, newQuantity) => {
         setProductQuantities(prevQuantities => ({
             ...prevQuantities,
             [productId]: newQuantity
         }));
     };
-
 
     return (
         <div className={styles.dataMenu}>
@@ -266,7 +306,6 @@ export default function CartPage() {
                         </div>
                         <div className={styles.priceProduct}>Общая сумма товаров: <span>{totalPrice.toFixed(2)} р</span></div>
                     </div>
-
                     {!cartEmpty && (
                         <form action='' className={styles.userData}>
                             <div className={styles.pointTwo}>
@@ -304,6 +343,7 @@ export default function CartPage() {
                                     </div>
                                 </div>
                                 <div className={styles.forUser}>*Для редактирования данных, зайдите в профиль</div>
+                                <ModalCart isOpen={isModalOpen} />
                             </div>
 
                             <div className={styles.titlePoint}>3. Способ доставки</div>

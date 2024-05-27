@@ -55,12 +55,12 @@ class OrderController {
                 await user.update({ scores: userScores });
             
                 const spentAmount = totalPrice + scoresAmountToUse;
-                const bonusPointsEarned = Math.floor(spentAmount / 10) * bonusPointsPerAmount;
+                const bonusPointsEarned = Math.floor(spentAmount / 10);
             
                 userScores += bonusPointsEarned;
                 await user.update({ scores: userScores });
             } else {
-                const bonusPointsEarned = Math.floor(totalPrice / 10) * bonusPointsPerAmount;
+                const bonusPointsEarned = Math.floor(totalPrice / 10);
                 userScores += bonusPointsEarned;
                 await user.update({ scores: userScores });
             }

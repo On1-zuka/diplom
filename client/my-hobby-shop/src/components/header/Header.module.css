@@ -89,3 +89,7 @@
     cursor: pointer;
     color: orange;
 }
+.menu_up__list_link:hover{
+    cursor: pointer;
+    color: orange;
+}

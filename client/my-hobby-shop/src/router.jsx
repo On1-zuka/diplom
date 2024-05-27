@@ -15,6 +15,9 @@ import MainProductCard from "./components/mainProductCard/MainProductCard";
 import Delivery from "./page/delivery/Delivery";
 import Pay from "./page/pay/Pay";
 import ProtectedRoute from './protectedRoute'; 
+import About from "./page/about/About";
+import Contacts from "./page/contacts/Contacts";
+import ModalCart from "./components/modalCart/ModalCart";
 
 
 const router = createBrowserRouter([
@@ -34,6 +37,9 @@ const router = createBrowserRouter([
             { path: "/registration", element: <Registration /> },
             { path: "/delivery", element: <Delivery /> },
             { path: "/payment", element: <Pay /> },
+            { path: "/about", element: <About /> },
+            { path: "/contacts", element: <Contacts /> },
+            { path: "/end", element: <ModalCart /> },
             {
                 path: "/menu",
                 element: <ProtectedRoute element={<SelectionMenu />} />,
