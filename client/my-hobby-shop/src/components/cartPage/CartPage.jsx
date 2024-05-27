@@ -137,7 +137,11 @@ export default function CartPage() {
 
             await sendEmail(userData.email,scoresUsed, productCard, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities);
         } catch (error) {
-            console.error('Error submitting order:', error);
+            if (error.response && error.response.data && error.response.data.message) {
+              toast.error(` ${error.response.data.message}`);
+            } else {
+              toast.error('Неизвестная ошибка');
+            }
         }
     };
 

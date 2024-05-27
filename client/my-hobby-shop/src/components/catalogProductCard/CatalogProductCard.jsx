@@ -47,9 +47,6 @@ export default function CatalogProductCard({ product }) {
                     ) : (
                         <div className={styles.closeProduct}><CloseIcon />{availability}</div>
                     )}
-                    <div className={styles.favorite}>
-                        <FavoriteBorderIcon className={styles.favoriteIcon} /> <span>В избранное</span>
-                    </div>
                 </div>
                 <Link to={`/catalog/product/${product.id}`} className={styles.nameProductLink}>
                     <p className={styles.nameProduct}>{product.name}</p>

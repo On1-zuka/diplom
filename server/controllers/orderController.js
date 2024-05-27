@@ -43,23 +43,22 @@ class OrderController {
             let scoresUsed = 0;
     
             if (usePoints) {
-                if (totalPrice >= priceThreshold) {
-                    const maxScoresToUse = Math.floor(totalPrice / 2);
-                    const scoresToUse = Math.min(userScores, maxScoresToUse);
-                    const scoresAmountToUse = scoresToUse * 0.5;
-                    totalPrice -= scoresAmountToUse;
-                    userScores -= scoresToUse;
-                    scoresUsed = scoresToUse;
-                    await user.update({ scores: userScores });
-    
-                    const spentAmount = totalPrice + scoresAmountToUse;
-                    const bonusPointsEarned = Math.floor(spentAmount / 10) * bonusPointsPerAmount;
-    
-                    userScores += bonusPointsEarned;
-                    await user.update({ scores: userScores });
-                } else {
-                    return next(ApiError.badRequest('Общая сумма товаров в корзине должна быть не менее 20.00'));
+                if (totalPrice < priceThreshold) {
+                    return next(ApiError.badRequest('Общая сумма должна быть не менее 20.00 для использования бонусных баллов'));
                 }
+                const maxScoresToUse = Math.floor(totalPrice / 2);
+                const scoresToUse = Math.min(userScores, maxScoresToUse);
+                const scoresAmountToUse = scoresToUse * 0.5;
+                totalPrice -= scoresAmountToUse;
+                userScores -= scoresToUse;
+                scoresUsed = scoresToUse;
+                await user.update({ scores: userScores });
+            
+                const spentAmount = totalPrice + scoresAmountToUse;
+                const bonusPointsEarned = Math.floor(spentAmount / 10) * bonusPointsPerAmount;
+            
+                userScores += bonusPointsEarned;
+                await user.update({ scores: userScores });
             } else {
                 const bonusPointsEarned = Math.floor(totalPrice / 10) * bonusPointsPerAmount;
                 userScores += bonusPointsEarned;

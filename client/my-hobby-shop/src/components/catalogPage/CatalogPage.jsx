@@ -6,6 +6,7 @@ import { Pagination, Slider } from "@mui/material";
 import Checkbox from '../../common/checkboxWithText/checkbox';
 import { ToastContainer } from 'react-toastify';
 import { useLocation, useParams } from 'react-router-dom';
+import noStock from "../../assets/Error/OutOfStock.jpg"
 
 export default function CatalogPage() {
     const [products, setProducts] = useState([]);
@@ -36,8 +37,10 @@ export default function CatalogPage() {
     const fetchData = async () => {
         try {
             const isBrandPath = location.pathname.includes('brands/catalog');
-            const brandIds = isBrandPath ? (id ? [id, ...selectedBrands] : selectedBrands) : [];
-            const categoriesId = !isBrandPath ? (id ? [id, ...selectedCategories] : selectedCategories) : [];
+            const isCategoryPath = location.pathname.includes('categories/catalog');
+
+            const brandIds = isBrandPath ? [id, ...selectedBrands].filter(Boolean) : selectedBrands;
+            const categoriesId = isCategoryPath ? [id, ...selectedCategories].filter(Boolean) : selectedCategories;
             
             const response = await axios.get(`${process.env.API_BASE_URL}/products`, {
                 params: {
@@ -276,7 +279,7 @@ export default function CatalogPage() {
                                             <CatalogProductCard key={product.id} product={product} />
                                         ))
                                     ) : (
-                                        <p className={styles.noProducts}>Нет доступных товаров</p>
+                                        <img src={noStock} alt="Нет доступных товаров" className={styles.noProducts}/>
                                     )}
                                     <ToastContainer />
                                 </div>

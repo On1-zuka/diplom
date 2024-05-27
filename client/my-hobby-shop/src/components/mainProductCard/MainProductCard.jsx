@@ -107,7 +107,6 @@ export default function MainProductCard() {
                                 ) : (
                                     <div className={styles.closeProduct}><CloseIcon />{availability}</div>
                                 )}
-                                <div className={styles.forever}><FavoriteBorderIcon /> В избранное</div>
                             </div>
                             <div className={styles.quantityProduct}>Количество товаров на складе: {product.quantity_product}</div>
                             <p className={styles.titleDescription}>Описание</p>

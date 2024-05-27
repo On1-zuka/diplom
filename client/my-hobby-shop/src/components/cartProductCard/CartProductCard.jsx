@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-export default function CartProductCard({ product, productId, updateProductList, updateTotalPrice, onQuantityChange }) {
+export default function CartProductCard({ product, productId, updateProductList, updateTotalPrice}) {
     const [showToast, setShowToast] = useState(false);
     const [inputQuantity, setInputQuantity] = useState(product.quantity);
     const [totalPrice, setTotalPrice] = useState((product.product.price * product.quantity).toFixed(2));
@@ -52,7 +52,7 @@ export default function CartProductCard({ product, productId, updateProductList,
             setDisplayQuantity(newQuantity);
             calculateTotalPrice(newQuantity);
             updateTotalPrice(prevTotalPrice => prevTotalPrice + product.product.price);
-            onQuantityChange(productId, newQuantity); // Notify parent of quantity change
+           
         }
     };
 
@@ -70,7 +70,7 @@ export default function CartProductCard({ product, productId, updateProductList,
             if (newQuantity < product.product.quantity_product) {
                 setShowQuantityMessage(false);
             }
-            onQuantityChange(productId, newQuantity); // Notify parent of quantity change
+           
         }
     };
 
@@ -88,7 +88,6 @@ export default function CartProductCard({ product, productId, updateProductList,
                 setDisplayQuantity(newValue);
                 calculateTotalPrice(newValue);
                 updateTotalPrice(product.product.price * newValue);
-                onQuantityChange(productId, newValue); // Notify parent of quantity change
             } else {
                 return;
             }
@@ -113,7 +112,6 @@ export default function CartProductCard({ product, productId, updateProductList,
                     <Link to={`/menu/cart/product/${product.product.id}`} className={styles.titleCard}>
                         <p className={styles.titleText}>{product.product.name}</p>
                     </Link>
-                    <FavoriteBorderIcon className={styles.favorite} />
                 </div>
                 {inputQuantity > maxQuantity && (
                     <div className={styles.quantity}>

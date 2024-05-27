@@ -77,7 +77,6 @@ export default function SelectionMenu(){
                                 <ul className={styles.listMenu}>
                                     <li onClick={()=>navigate('/menu/profile')}><PersonIcon />Мой профиль </li>
                                     <li onClick={()=>navigate('/menu/cart')}><ShoppingCartIcon />Корзина</li>
-                                    <li><FavoriteIcon />Избранное</li>
                                     <li onClick={handleLogout}><ExitToAppIcon />Выход из аккаунта</li>
                                 </ul>
                             </div>

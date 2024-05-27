@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import Carousel from "nuka-carousel";
 import axios from "axios";
 
-
 export default function SliderProducts() {
 
   const [productCard, setProductCard] = useState([]);
@@ -15,7 +14,7 @@ export default function SliderProducts() {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${process.env.API_BASE_URL}/products`);
-        setProductCard(response.data.rows);
+        setProductCard(response.data.rows.slice(0, 10));
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -24,23 +23,23 @@ export default function SliderProducts() {
     fetchData();
   }, []);
 
-return (
-  <Carousel className={styles.slider}
-    slidesToShow={1}
-    wrapAround={true}
-    cellSpacing={40}
-    speed={1500}
-    renderCenterLeftControls={({ previousSlide }) => <LeftSlider onClick={previousSlide} />}
-    renderCenterRightControls={({ nextSlide }) => <RightSlider onClick={nextSlide} />}
-    defaultControlsConfig={{
-      pagingDotsStyle: {
-        display: 'none',
-      },
-    }}
-  >
-    {productCard.map((product) =>
-      <ProductCard key={product.id} product={product} />
-    )}
-  </Carousel>
-)
+  return (
+    <Carousel className={styles.slider}
+      slidesToShow={1}
+      wrapAround={true}
+      cellSpacing={40}
+      speed={1500}
+      renderCenterLeftControls={({ previousSlide }) => <LeftSlider onClick={previousSlide} />}
+      renderCenterRightControls={({ nextSlide }) => <RightSlider onClick={nextSlide} />}
+      defaultControlsConfig={{
+        pagingDotsStyle: {
+          display: 'none',
+        },
+      }}
+    >
+      {productCard.map((product) =>
+        <ProductCard key={product.id} product={product} />
+      )}
+    </Carousel>
+  )
 }
