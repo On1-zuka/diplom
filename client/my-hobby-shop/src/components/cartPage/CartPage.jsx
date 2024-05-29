@@ -155,7 +155,6 @@ export default function CartPage() {
             // Удаление всех товаров из корзины и обновление количества товаров на складе
             await clearCart();
 
-            toast.success('Заказ успешно оформлен');
             setIsModalOpen(true);
 
             setTimeout(() => {
@@ -306,6 +305,7 @@ export default function CartPage() {
                         </div>
                         <div className={styles.priceProduct}>Общая сумма товаров: <span>{totalPrice.toFixed(2)} р</span></div>
                     </div>
+                    
                     {!cartEmpty && (
                         <form action='' className={styles.userData}>
                             <div className={styles.pointTwo}>
@@ -343,7 +343,7 @@ export default function CartPage() {
                                     </div>
                                 </div>
                                 <div className={styles.forUser}>*Для редактирования данных, зайдите в профиль</div>
-                                <ModalCart isOpen={isModalOpen} />
+                               
                             </div>
 
                             <div className={styles.titlePoint}>3. Способ доставки</div>
@@ -416,6 +416,10 @@ export default function CartPage() {
                     )}
                 </div>
             )}
+             {isModalOpen && (
+                <ModalCart onClose={() => setIsModalOpen(false)} />
+            )}
+            <ToastContainer />
         </div>
     );
 }

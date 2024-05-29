@@ -17,8 +17,9 @@ import Pay from "./page/pay/Pay";
 import ProtectedRoute from './protectedRoute'; 
 import About from "./page/about/About";
 import Contacts from "./page/contacts/Contacts";
-import ModalCart from "./components/modalCart/ModalCart";
-
+import SelectionAdmin from './admin/selectionAdmin/SelectionAdmin'
+import AddProducts from './admin/addProducts/AddProducts'
+import EditProducts from "./admin/editProducts/EditProduct";
 
 const router = createBrowserRouter([
     {
@@ -39,13 +40,20 @@ const router = createBrowserRouter([
             { path: "/payment", element: <Pay /> },
             { path: "/about", element: <About /> },
             { path: "/contacts", element: <Contacts /> },
-            { path: "/end", element: <ModalCart /> },
             {
                 path: "/menu",
                 element: <ProtectedRoute element={<SelectionMenu />} />,
                 children: [
                     { path: "profile", element: <ProtectedRoute element={<Profile />} /> },
                     { path: "cart", element: <ProtectedRoute element={<Cart />} /> },
+                ]
+            },
+            {
+                path: "/admin",
+                element: <SelectionAdmin />,  
+                children:[
+                    { path: "addProducts", element: <AddProducts/> },
+                    { path: "editProducts", element: <EditProducts/>}
                 ]
             },
             {

@@ -41,7 +41,7 @@ export default function CatalogPage() {
 
             const brandIds = isBrandPath ? [id, ...selectedBrands].filter(Boolean) : selectedBrands;
             const categoriesId = isCategoryPath ? [id, ...selectedCategories].filter(Boolean) : selectedCategories;
-            
+
             const response = await axios.get(`${process.env.API_BASE_URL}/products`, {
                 params: {
                     brandId: brandIds.join(','),
@@ -197,17 +197,24 @@ export default function CatalogPage() {
                                     <div className={styles.stock}>
                                         <p className={styles.selectName}>В наличии</p>
                                         <div className={styles.pointStock}>
-                                            <Checkbox
-                                                label="Да"
-                                                checked={inStock === "yes"}
-                                                onChange={() => setInStock(inStock === "yes" ? "" : "yes")}
-                                            />
-                                            <Checkbox
-                                                label="Нет"
-                                                checked={inStock === "no"}
-                                                onChange={() => setInStock(inStock === "no" ? "" : "no")}
-                                                disabled={inStock === "yes"}
-                                            />
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    value="yes"
+                                                    checked={inStock === "yes"}
+                                                    onChange={() => setInStock("yes")}
+                                                />
+                                                Да
+                                            </label>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    value="no"
+                                                    checked={inStock === "no"}
+                                                    onChange={() => setInStock("no")}
+                                                />
+                                                Нет
+                                            </label>
                                         </div>
                                     </div>
                                     <div className={styles.price}>
@@ -273,7 +280,7 @@ export default function CatalogPage() {
                                             <CatalogProductCard key={product.id} product={product} />
                                         ))
                                     ) : (
-                                        <img src={noStock} alt="Нет доступных товаров" className={styles.noProducts}/>
+                                        <img src={noStock} alt="Нет доступных товаров" className={styles.noProducts} />
                                     )}
                                     <ToastContainer />
                                 </div>

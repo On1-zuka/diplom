@@ -75,7 +75,7 @@ export default function Header() {
                             </li>
                             <li
                                 className={styles.menu__list__items}
-                                onClick={() => navigate("/end")}
+                                onClick={() => navigate("/admin")}
                             >
                                 < AdminPanelSettingsIcon />
                                 Aдмин

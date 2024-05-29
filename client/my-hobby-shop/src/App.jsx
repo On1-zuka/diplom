@@ -10,6 +10,7 @@ import { useEffect } from 'react'
 import {useUser} from './context/UserContext'
 import { useAuth } from './context/AuthContext'
 
+
 export default function App() {
   
   const {user,setUser} = useUser();

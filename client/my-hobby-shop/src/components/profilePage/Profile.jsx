@@ -16,7 +16,6 @@ const Profile = () => {
             setUserData(user)
         }
     }, [user]);
-    console.log(userData)
 
     const saveUserData = async () => {
         try {

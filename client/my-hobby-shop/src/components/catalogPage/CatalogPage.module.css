@@ -98,12 +98,18 @@
 .orangeThumb:hover {
     color: orange;
 }
-.pointStock{
+.pointStock {
     margin: 0px 0px 20px 0px;
 }
-.pointStock input{
+
+.pointStock label {
     display: flex;
-    
+    align-items: center; 
+    margin: 0px 0px 10px 0px;
+}
+
+.pointStock input[type="radio"] {
+    margin-right: 10px; 
 }
 .blockPrice{
     display: flex;
