@@ -3,6 +3,7 @@ import styles from './EditProducts.module.css';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 export default function EditProducts() {
     const [products, setProducts] = useState([]);
@@ -45,7 +46,11 @@ export default function EditProducts() {
                     <tbody>
                         {products.map((product) => (
                             <tr key={product.id} className={styles.lineTable}>
-                                <td className={styles.nameProducts}>{product.name}</td>
+                                <td className={styles.nameProducts}>
+                                    <Link to={`/admin/editProducts/product/${product.id}`} className={styles.nameProductLink}>
+                                        {product.name}
+                                    </Link>
+                                </td>
                                 <td className={styles.quantityProducts}>{product.quantity_product}</td>
                                 <td className={styles.priceProducts}>{product.price} <span>р.</span></td>
                                 <td className={styles.delete} onClick={() => handleDelete(product.id)}>

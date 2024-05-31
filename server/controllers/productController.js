@@ -1,8 +1,9 @@
-const { Products, Brands } = require('../models/models')
+const { Products, Brands, Categories } = require('../models/models')
 const ApiError = require("../error/ApiError")
 const uuid = require('uuid')
 const path = require('path')
 const mime = require('mime');
+const fs = require('fs');
 const { Op } = require('sequelize');
 
 class ProductController {
@@ -12,7 +13,7 @@ class ProductController {
                 return next(ApiError.badRequest("Изображение не было загружено"));
             }
 
-            const { brandId, categoryId, name, price, description, discount, country, purpose, article, quantity_product} = req.body;
+            const { brandId, categoryId, name, price, description, country, purpose, article, quantity_product } = req.body;
             const { img } = req.files;
 
             const parsedPrice = parseFloat(price);
@@ -43,7 +44,6 @@ class ProductController {
                 name,
                 price: parsedPrice,
                 description,
-                discount,
                 country,
                 purpose,
                 article,
@@ -68,13 +68,13 @@ class ProductController {
             limit = limit || 9;
             const offset = page * limit - limit;
             let product;
-    
+
             const whereClause = {};
-    
+
             if (minPrice !== undefined && maxPrice !== undefined) {
                 whereClause.price = { [Op.between]: [minPrice, maxPrice] };
             }
-    
+
             if (inStock !== undefined) {
                 if (inStock === 'yes') {
                     whereClause.quantity_product = { [Op.gt]: 0 };
@@ -82,7 +82,7 @@ class ProductController {
                     whereClause.quantity_product = { [Op.eq]: 0 };
                 }
             }
-    
+
             if (!brandId && !categoryId) {
                 product = await Products.findAndCountAll({ where: whereClause, limit, offset });
             } else if (brandId && !categoryId) {
@@ -98,7 +98,7 @@ class ProductController {
                 whereClause.brandId = brandId;
                 product = await Products.findAndCountAll({ where: whereClause, limit, offset });
             }
-    
+
             return res.json(product);
         } catch (e) {
             return next(ApiError.badRequest("Ошибка сервера"));
@@ -113,7 +113,8 @@ class ProductController {
             const product = await Products.findOne({
                 where: { id },
                 include: [
-                    { model: Brands, attributes: ['name'] } // Включаем модель Brands и указываем, что нужно вернуть только поле name
+                    { model: Brands, attributes: ['name'] },
+                    { model: Categories, attributes: ['name'] }
                 ]
             });
             if (!product) {
@@ -144,18 +145,48 @@ class ProductController {
         try {
             const { id } = req.params;
             const updates = req.body;
+            const { img } = req.files || {};
+
+            // Проверка на корректный формат ID товара
             if (isNaN(id)) {
                 return next(ApiError.badRequest("Некорректный формат ID товара"));
             }
+
+            // Поиск товара по ID
             const productToUpdate = await Products.findOne({ where: { id } });
             if (!productToUpdate) {
                 return next(ApiError.notFound("Товар не найден"));
             }
 
+            // Проверка наличия данных для обновления
             if (Object.keys(updates).length === 0) {
                 return res.status(400).json({ message: "Нет данных для обновления" });
             }
 
+            // Проверка на заполненность всех полей и недопустимость пробелов
+            for (const [key, value] of Object.entries(updates)) {
+                if (typeof value === 'string' && !value.trim()) {
+                    return next(ApiError.badRequest(`Поле(я) не должно быть пустым или содержать только пробелы`));
+                }
+            }
+
+            if ('name' in updates && updates.name.length > 150) {
+                return next(ApiError.badRequest("Поле название не должно превышать 150 символов"));
+            }
+            if ('description' in updates && updates.description.length > 500) {
+                return next(ApiError.badRequest("Поле описания не должно превышать 500 символов"));
+            }
+            if ('country' in updates && updates.country.length > 50) {
+                return next(ApiError.badRequest("Поле Страна не должно превышать 50 символов"));
+            }
+            if ('purpose' in updates && updates.purpose.length > 100) {
+                return next(ApiError.badRequest("Поле предназначение не должно превышать 100 символов"));
+            }
+            if ('article' in updates && updates.article.length > 5) {
+                return next(ApiError.badRequest("Поле артикул не должно превышать 5 символов"));
+            }
+
+            // Проверка уникальности артикула
             if ('article' in updates && updates.article !== productToUpdate.article) {
                 const existingProduct = await Products.findOne({ where: { article: updates.article } });
                 if (existingProduct && existingProduct.id !== id) {
@@ -163,6 +194,7 @@ class ProductController {
                 }
             }
 
+            // Проверка и преобразование количества товара
             if ('quantity_product' in updates) {
                 const parsedQuantity = parseInt(updates.quantity_product);
                 if (isNaN(parsedQuantity) || !Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
@@ -171,6 +203,7 @@ class ProductController {
                 productToUpdate.quantity_product = parsedQuantity;
             }
 
+            // Проверка и преобразование цены товара
             if ('price' in updates) {
                 const parsedPrice = parseFloat(updates.price);
                 if (isNaN(parsedPrice) || parsedPrice <= 0) {
@@ -178,16 +211,61 @@ class ProductController {
                 }
                 productToUpdate.price = parsedPrice;
             }
+
             
-            for (const key of Object.keys(updates)) {
-                if (key !== 'quantity_product' && key !== 'price') {
-                    productToUpdate[key] = updates[key];
+            if ('brandId' in updates) {
+                const parsedBrandId = parseInt(updates.brandId);
+                if (isNaN(parsedBrandId) || parsedBrandId <= 0) {
+                    return next(ApiError.badRequest("Некорректное значение brandId"));
+                }
+                productToUpdate.brandId = parsedBrandId;
+            }
+            
+
+            if ('categoryId' in updates) {
+                const parsedCategoryId = parseInt(updates.categoryId);
+                if (isNaN(parsedCategoryId) || parsedCategoryId <= 0) {
+                    return next(ApiError.badRequest("Некорректное значение categoryId"));
+                }
+                productToUpdate.categoryId = parsedCategoryId;
+            }
+            
+
+            if (img) {
+                const allowedExtensions = ['jpg', 'jpeg', 'png'];
+                const fileExtension = img.name.split('.').pop().toLowerCase();
+                if (!allowedExtensions.includes(fileExtension)) {
+                    return next(ApiError.badRequest('Недопустимый тип файла. Разрешены только JPG, JPEG, PNG'));
+                }
+
+                if (productToUpdate.img) {
+                    const oldFilePath = path.resolve(__dirname, '..', 'static', productToUpdate.img);
+                    if (fs.existsSync(oldFilePath)) {
+                        fs.unlinkSync(oldFilePath);
+                    }
+                }
+
+                const fileName = uuid.v4() + "." + fileExtension;
+                const filePath = path.resolve(__dirname, '..', 'static', fileName);
+                try {
+                    await img.mv(filePath);
+                    productToUpdate.img = fileName;
+                } catch (err) {
+                    return next(ApiError.internal('Ошибка при сохранении нового изображения'));
                 }
             }
 
+            // Обновление остальных полей товара
+            for (const key of Object.keys(updates)) {
+                if (key !== 'quantity_product' && key !== 'price' && key !== 'brandId' && key !== 'categoryId') {
+                    productToUpdate[key] = updates[key];
+                }
+            }
+            // Сохранение обновленного товара
             await productToUpdate.save();
             return res.json(productToUpdate);
         } catch (e) {
+            // Обработка внутренней ошибки сервера
             return next(ApiError.internal("Внутренняя ошибка сервера: " + e.message));
         }
     }

@@ -50,7 +50,6 @@ const Products = sequelize.define('products', {
     price: { type: DataTypes.REAL, allowNull: false },
     rating: { type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0 },
     description: { type: DataTypes.STRING, allowNull: false },
-    discount: { type: DataTypes.DOUBLE },
     country: { type: DataTypes.STRING, allowNull: false },
     purpose: { type: DataTypes.STRING, allowNull: false },
     article: { type: DataTypes.STRING, allowNull: false },

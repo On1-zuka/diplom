@@ -43,7 +43,7 @@ export default function Header() {
                                 </Link>
                             </li>
                             <li className={styles.menu_up__list_item}>
-                                +375 (44) 788 20 35
+                                <a href="tel:+375 (44) 788 20 35">+375 (44) 788 20 35</a>
                             </li>
                         </ul>
                     </nav>

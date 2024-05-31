@@ -20,6 +20,8 @@ import Contacts from "./page/contacts/Contacts";
 import SelectionAdmin from './admin/selectionAdmin/SelectionAdmin'
 import AddProducts from './admin/addProducts/AddProducts'
 import EditProducts from "./admin/editProducts/EditProduct";
+import EditProductsForm from "./admin/editProductsForm/EditProductsForm";
+
 
 const router = createBrowserRouter([
     {
@@ -52,8 +54,9 @@ const router = createBrowserRouter([
                 path: "/admin",
                 element: <SelectionAdmin />,  
                 children:[
-                    { path: "addProducts", element: <AddProducts/> },
-                    { path: "editProducts", element: <EditProducts/>}
+                    { path: "editProducts", element: <EditProducts/>},
+                    { path: "editProducts/product/:id", element: <EditProductsForm/>},
+                    { path: "addProducts", element: <EditProductsForm/> },
                 ]
             },
             {
