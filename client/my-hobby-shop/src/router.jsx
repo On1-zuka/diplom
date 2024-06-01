@@ -18,9 +18,10 @@ import ProtectedRoute from './protectedRoute';
 import About from "./page/about/About";
 import Contacts from "./page/contacts/Contacts";
 import SelectionAdmin from './admin/selectionAdmin/SelectionAdmin'
-import AddProducts from './admin/addProducts/AddProducts'
 import EditProducts from "./admin/editProducts/EditProduct";
 import EditProductsForm from "./admin/editProductsForm/EditProductsForm";
+import AddProductsForm from "./admin/addProductsForm/AddProductsForm";
+
 
 
 const router = createBrowserRouter([
@@ -56,7 +57,7 @@ const router = createBrowserRouter([
                 children:[
                     { path: "editProducts", element: <EditProducts/>},
                     { path: "editProducts/product/:id", element: <EditProductsForm/>},
-                    { path: "addProducts", element: <EditProductsForm/> },
+                    { path: "addProducts", element: <AddProductsForm/> },
                 ]
             },
             {

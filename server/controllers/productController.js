@@ -12,33 +12,39 @@ class ProductController {
             if (!req.files || !req.files.img) {
                 return next(ApiError.badRequest("Изображение не было загружено"));
             }
-
+    
             const { brandId, categoryId, name, price, description, country, purpose, article, quantity_product } = req.body;
             const { img } = req.files;
-
+    
+            // Check if any required field is empty
+            if (!brandId || !categoryId || !name || !price || !description || !country || !purpose || !article || !quantity_product) {
+                return next(ApiError.badRequest("Пожалуйста, заполните все поля"));
+            }
+    
             const parsedPrice = parseFloat(price);
             if (isNaN(parsedPrice) || parsedPrice <= 0) {
                 return next(ApiError.badRequest("Некорректное значение цены"));
             }
-
+    
             const parsedQuantity = parseInt(quantity_product);
             if (isNaN(parsedQuantity) || !Number.isInteger(parsedQuantity) || parsedQuantity <= 0) {
                 return next(ApiError.badRequest("Некорректное значение количества товара"));
             }
-
+    
             const mimeType = mime.lookup(img.name);
             if (!mimeType.startsWith('image/')) {
                 return next(ApiError.badRequest("Пожалуйста, загрузите изображение"));
             }
-
+    
             const fileExtension = img.name.split('.').pop();
             const fileName = uuid.v4() + "." + fileExtension;
             await img.mv(path.resolve(__dirname, '..', 'static', fileName));
-
+    
             const existingProduct = await Products.findOne({ where: { article } });
             if (existingProduct) {
                 return next(ApiError.badRequest("Товар с таким артикулом уже существует"));
             }
+    
             const product = await Products.create({
                 img: fileName,
                 name,
@@ -51,16 +57,17 @@ class ProductController {
                 brandId,
                 categoryId,
             });
-
+    
             if (!product) {
                 return next(ApiError.badRequest("Не удалось создать товар. Проверьте все поля на корректность ввода"));
             }
-
+    
             return res.json(product);
         } catch (e) {
             return next(ApiError.internal("Внутренняя ошибка сервера: " + e.message));
         }
     }
+    
     async getAll(req, res, next) {
         try {
             let { brandId, categoryId, limit, page, minPrice, maxPrice, inStock } = req.query;

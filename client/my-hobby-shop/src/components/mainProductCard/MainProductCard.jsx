@@ -118,7 +118,6 @@ export default function MainProductCard() {
                                     <li className={styles.listItemPoint}>Страна производителя: <span>{product.country}</span></li>
                                     <li className={styles.listItemPoint}>Предназначение: <span>{product.purpose}</span></li>
                                     <li className={styles.listItemPoint}>Артикул: <span>{product.article}</span></li>
-                                    <li className={styles.listItemPoint}>В наборе: <span>{product.set ? 'Да' : 'Нет'}</span></li>
                                 </ul>
                             </div>
                         </div>

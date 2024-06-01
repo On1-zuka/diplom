@@ -53,7 +53,6 @@ const Products = sequelize.define('products', {
     country: { type: DataTypes.STRING, allowNull: false },
     purpose: { type: DataTypes.STRING, allowNull: false },
     article: { type: DataTypes.STRING, allowNull: false },
-    set: {type: DataTypes.BOOLEAN, allowNull: false}
 })
 
 const Favorite = sequelize.define('favorite', {

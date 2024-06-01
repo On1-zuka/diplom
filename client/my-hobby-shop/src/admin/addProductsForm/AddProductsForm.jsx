@@ -1,49 +1,32 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import styles from './AddProductsForm.module.css';
 import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
-import styles from './EditProductsForm.module.css';
 
-export default function EditProductsForm() {
-    const { id } = useParams();
-    const [product, setProduct] = useState({
+export default function AddProductsForm() {
+    const [brands, setBrands] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [formData, setFormData] = useState({
         name: '',
         description: '',
-        brand: '',
         country: '',
-        brandId: '',
-        category: '',
-        categoryId: '',
         purpose: '',
+        brandId: '',
+        categoryId: '',
         article: '',
         price: '',
         quantity_product: '',
         img: null
     });
-    const [currentImage, setCurrentImage] = useState(null);
-    const [brands, setBrands] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [file, setFile] = useState(null);
 
     useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const response = await axios.get(`${process.env.API_BASE_URL}/products/${id}`);
-                const productData = response.data;
-                setProduct(productData);
-                setCurrentImage(productData.img);
-            } catch (error) {
-                handleFetchError(error, 'Ошибка при загрузке данных');
-            }
-        };
-
         const fetchBrands = async () => {
             try {
                 const response = await axios.get(`${process.env.API_BASE_URL}/brands`);
                 setBrands(response.data);
             } catch (error) {
-                handleFetchError(error, 'Ошибка при загрузке брендов');
+                toast.error('Ошибка при загрузке брендов');
             }
         };
 
@@ -52,88 +35,60 @@ export default function EditProductsForm() {
                 const response = await axios.get(`${process.env.API_BASE_URL}/categories`);
                 setCategories(response.data);
             } catch (error) {
-                handleFetchError(error, 'Ошибка при загрузке категорий');
+                toast.error('Ошибка при загрузке категорий');
             }
         };
-
-        fetchProduct();
         fetchBrands();
         fetchCategories();
-    }, [id]);
+    }, []);
 
-    const handleFetchError = (error, defaultMessage) => {
-        if (error.response && error.response.data && error.response.data.message) {
-            toast.error(`${defaultMessage}: ${error.response.data.message}`);
+    const handleChange = (e) => {
+        const { name, value, files } = e.target;
+        if (name === 'img') {
+            setFormData((prevData) => ({ ...prevData, img: files[0] }));
         } else {
-            console.error(defaultMessage, error);
-            toast.error(defaultMessage);
+            setFormData((prevData) => ({ ...prevData, [name]: value }));
         }
-    };
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        setFile(file);
-        setCurrentImage(URL.createObjectURL(file));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('name', product.name);
-        formData.append('description', product.description);
-        formData.append('country', product.country);
-        formData.append('purpose', product.purpose);
-        formData.append('article', product.article);
-        formData.append('price', product.price);
-        formData.append('brandId', Number(product.brandId));
-        formData.append('categoryId', Number(product.categoryId));
-        formData.append('quantity_product', product.quantity_product);
-        if (file) {
-            formData.append('img', file);
-        }
         try {
-            await axios.patch(`${process.env.API_BASE_URL}/products/${id}`, formData);
-            toast.success('Товар успешно обновлен');
-        } catch (error) {
-            if (error.response && error.response.data && error.response.data.message) {
-                toast.error(`Ошибка при обновлении товара: ${error.response.data.message}`);
-            } else {
-                console.error('Ошибка при обновлении товара:', error);
-                toast.error('Ошибка при обновлении товара');
+            const data = new FormData();
+            for (const key in formData) {
+                data.append(key, formData[key]);
             }
+
+            const response = await axios.post(`${process.env.API_BASE_URL}/products`, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            if (response.status === 200) {
+                toast.success('Товар успешно добавлен');
+                // Сброс формы после успешного добавления товара
+                setFormData({
+                    name: '',
+                    description: '',
+                    country: '',
+                    purpose: '',
+                    brandId: '',
+                    categoryId: '',
+                    article: '',
+                    price: '',
+                    quantity_product: '',
+                    img: null
+                });
+            }
+        } catch (error) {
+            toast.error(`Ошибка при добавлении товара: ${error.response?.data?.message || error.message}`);
         }
     };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        if (name === "brand") {
-            const selectedBrand = brands.find(brand => brand.name === value);
-            const brandId = selectedBrand ? parseInt(selectedBrand.id, 10) : '';
-            console.log(brandId);
-            setProduct(prevProduct => ({
-                ...prevProduct,
-                [name]: value,
-                brandId: isNaN(brandId) ? "" : brandId
-            }));
-        } else if (name === "category") {
-            const selectedCategory = categories.find(category => category.name === value);
-            const categoryId = selectedCategory ? parseInt(selectedCategory.id, 10) : '';
-            console.log(categoryId);
-            setProduct(prevProduct => ({
-                ...prevProduct,
-                [name]: value,
-                categoryId: isNaN(categoryId) ? "" : categoryId
-            }));
-        } else {
-            setProduct(prevProduct => ({
-                ...prevProduct,
-                [name]: value
-            }));
-        }
-    };
     return (
         <div className={styles.content}>
-            <div className={styles.title}>Изменить товар</div>
+            <div className={styles.title}>Добавить товар</div>
             <form className={styles.editForm} onSubmit={handleSubmit}>
                 <div className={styles.edit}>
                     <div className={styles.text}>Название:</div>
@@ -141,7 +96,7 @@ export default function EditProductsForm() {
                         type="text"
                         className={styles.name}
                         name="name"
-                        value={product.name}
+                        value={formData.name}
                         onChange={handleChange}
                     />
                 </div>
@@ -150,7 +105,7 @@ export default function EditProductsForm() {
                     <textarea
                         className={styles.description}
                         name="description"
-                        value={product.description}
+                        value={formData.description}
                         onChange={handleChange}
                     ></textarea>
                 </div>
@@ -162,7 +117,7 @@ export default function EditProductsForm() {
                                 type="text"
                                 className={styles.editCountry}
                                 name="country"
-                                value={product.country}
+                                value={formData.country}
                                 onChange={handleChange}
                             />
                         </div>
@@ -171,7 +126,7 @@ export default function EditProductsForm() {
                             <textarea
                                 className={styles.editDestiny}
                                 name="purpose"
-                                value={product.purpose}
+                                value={formData.purpose}
                                 onChange={handleChange}
                             ></textarea>
                         </div>
@@ -179,12 +134,13 @@ export default function EditProductsForm() {
                             <div className={styles.text}>Бренд:</div>
                             <select
                                 className={styles.selectBrand}
-                                name="brand"
-                                value={product.brand.name}
+                                name="brandId"
+                                value={formData.brandId}
                                 onChange={handleChange}
                             >
+                                <option value="">Выберите бренд</option>
                                 {brands.map((brand) => (
-                                    <option key={brand.id} value={brand.name}>
+                                    <option key={brand.id} value={brand.id}>
                                         {brand.name}
                                     </option>
                                 ))}
@@ -194,12 +150,13 @@ export default function EditProductsForm() {
                             <div className={styles.text}>Категория:</div>
                             <select
                                 className={styles.selectCategories}
-                                name="category"
-                                value={product.category.name}
+                                name="categoryId"
+                                value={formData.categoryId}
                                 onChange={handleChange}
                             >
+                                <option value="">Выберите категорию</option>
                                 {categories.map((category) => (
-                                    <option key={category.id} value={category.name}>
+                                    <option key={category.id} value={category.id}>
                                         {category.name}
                                     </option>
                                 ))}
@@ -211,7 +168,7 @@ export default function EditProductsForm() {
                                 type="text"
                                 className={styles.editArticle}
                                 name="article"
-                                value={product.article}
+                                value={formData.article}
                                 onChange={handleChange}
                             />
                         </div>
@@ -223,7 +180,7 @@ export default function EditProductsForm() {
                         type="number"
                         className={styles.price}
                         name="price"
-                        value={product.price}
+                        value={formData.price}
                         onChange={handleChange}
                     />
                 </div>
@@ -233,20 +190,13 @@ export default function EditProductsForm() {
                         type="number"
                         className={styles.quantity}
                         name="quantity_product"
-                        value={product.quantity_product}
+                        value={formData.quantity_product}
                         onChange={handleChange}
                     />
                 </div>
                 <div className={styles.edit}>
                     <div className={styles.text}>Изображение:</div>
-                    <input type="file" className={styles.img} onChange={handleFileChange} />
-                    {currentImage && (
-                        <img
-                            src={`${process.env.API_BASE_URL}/images/${currentImage}`}
-                            alt="Текущее изображение"
-                            className={styles.currentImage}
-                        />
-                    )}
+                    <input type="file" className={styles.img} name="img" onChange={handleChange} />
                 </div>
                 <button type="submit" className={styles.saveButton}>Сохранить</button>
             </form>
