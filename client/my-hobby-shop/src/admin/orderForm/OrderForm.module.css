@@ -1,0 +1,45 @@
+.content{
+    width: 800px;
+}
+.title{
+    font-size: 30px;
+    margin: 0px 0px 20px 0px;
+}
+.underTitle{
+    margin: 0px 0px 10px 0px;
+}
+.table{
+    width: 100%;
+    font-size: 16px;
+    border-collapse: collapse;
+    margin: 0px 0px 20px 0px;
+}
+th,
+.name, .orderPlace,.orderDate,
+.send {
+    border: 1px solid #bebebe; 
+    padding: 8px; 
+    text-align: center;
+}
+.name{
+    width: 350px;
+    line-height: 16px;
+}
+.orderPlace,
+.orderDate{
+    width: 150px;
+}
+.send{
+    width: 150px;
+}
+.button{
+    width: 90px;
+    padding: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.button:hover{
+    box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+}

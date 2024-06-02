@@ -13,7 +13,7 @@ export default function SelectionAdmin(){
                             <ul className={styles.listMenu}>
                                 <li onClick={()=>navigate('/admin/editProducts')}>Изменение и удаление товаров </li>
                                 <li onClick={()=>navigate('/admin/addProducts')}>Добавление товаров</li>
-                                <li>Заказы</li>
+                                <li onClick={()=>navigate('/admin/order')}>Заказы</li>
                                 <li>Выход</li>
                             </ul>
                         </div>

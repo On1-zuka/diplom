@@ -93,6 +93,31 @@ class OrderController {
             return next(ApiError.badRequest(error.message));
         }
     }
+    async fullOrder(req, res, next) {
+        try {
+            const carts = await Cart.findAll({
+                where: {
+                    status: 2
+                },
+                include: [{
+                    model: User,
+                    attributes: ['name', 'surname', 'patronymic', 'email']
+                }]
+            });
     
+            const formattedCarts = carts.map(cart => {
+                return {
+                    ...cart.toJSON(),
+                    orderDate: cart.orderDate ? new Date(cart.orderDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : null,
+                    pickup: cart.pickup ? 'Из магазина' : 'На дом'
+                };
+            });
+    
+            res.json(formattedCarts);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error retrieving carts' });
+        }
+    }
 }
 module.exports = new OrderController;
