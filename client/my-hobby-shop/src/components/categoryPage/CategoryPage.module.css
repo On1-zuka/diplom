@@ -9,8 +9,8 @@
 }
 .brandsAndCategoryList{
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
     row-gap: 30px;
+    column-gap: 40px;
 }
 
