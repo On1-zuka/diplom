@@ -91,6 +91,10 @@ class BrandController {
                 return next(ApiError.notFound('Бренд не найден'));
             }
 
+            if (name && name.trim().length === 0) {
+                return next(ApiError.badRequest('Проверьте пробелы в названии'));
+            }
+
             if (!name && !img) {
                 return next(ApiError.badRequest('Не указаны данные для обновления'));
             }

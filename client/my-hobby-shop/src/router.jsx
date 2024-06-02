@@ -23,7 +23,7 @@ import EditProductsForm from "./admin/editProductsForm/EditProductsForm";
 import AddProductsForm from "./admin/addProductsForm/AddProductsForm";
 import OrderForm from "./admin/orderForm/OrderForm"; 
 import EditBrandsForm from "./admin/editBrandsForm/editBrandForm";
-
+import EditBrands from "./admin/editBrands/EditBrands";
 
 
 
@@ -62,7 +62,8 @@ const router = createBrowserRouter([
                     { path: "editProducts/product/:id", element: <EditProductsForm/>},
                     { path: "addProducts", element: <AddProductsForm/> },
                     { path: "order",element: <OrderForm/>},
-                    { path: "editBrands", element: <EditBrandsForm/>}
+                    { path: "editBrands", element: <EditBrandsForm/>},
+                    { path: "editBrands/brand/:id", element: <EditBrands/>}
                 ]
             },
             {

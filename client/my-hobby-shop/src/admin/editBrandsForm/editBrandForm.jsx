@@ -2,6 +2,7 @@ import styles from './EditBrandForm.module.css'
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios'
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function EditBrandsForm() {
     const [brands, setBrands] = useState([]);
@@ -17,6 +18,15 @@ export default function EditBrandsForm() {
         };
         fetchData();
     }, []);
+
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`${process.env.API_BASE_URL}/brands/${id}`);
+            setBrands(brands.filter(brand => brand.id !== id));
+        } catch (error) {
+            toast.error(`Ошибка при удалении товара: ${error.response?.data?.message || error.message}`);
+        }
+    };
 
     return (
         <div className={styles.content}>
@@ -34,9 +44,11 @@ export default function EditBrandsForm() {
                         {brands.map((brand) => (
                             <tr key={brand.id} className={styles.lineTable}>
                                 <td className={styles.nameBrands}>
+                                <Link to={`/admin/editBrands/brand/${brand.id}`}>
                                     {brand.name}
+                                </Link>
                                 </td>
-                                <td className={styles.delete}>
+                                <td className={styles.delete} onClick={() => handleDelete(brand.id)}>
                                     <DeleteIcon />
                                 </td>
                             </tr>
