@@ -1,21 +1,47 @@
 import React, { useEffect, useState } from "react";
 import styles from "./OrderForm.module.css";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function OrderForm() {
     const [orders, setOrders] = useState([]);
 
-    useEffect(() => {
-        async function fetchOrders() {
-            try {
-                const response = await axios.get(`${process.env.API_BASE_URL}/order/cart`);
-                setOrders(response.data);
-            } catch (error) {
-                console.error('Error fetching orders', error);
-            }
+    const fetchOrders = async () => {
+        try {
+            const response = await axios.get(`${process.env.API_BASE_URL}/order/cart`);
+            setOrders(response.data);
+        } catch (error) {
+            toast.error('Ошибка при получении заказов');
+            console.error('Error fetching orders', error);
         }
+    };
+
+    useEffect(() => {
         fetchOrders();
     }, []);
+
+    const handleSend = async (order) => {
+        try {
+            await axios.put(`${process.env.API_BASE_URL}/order/order-status/${order.id}`, { status: 1 });
+
+            const emailContent = order.pickup ? 
+                `<p>Уважаемый(ая) ${order.user.name}, ваш заказ готов к самовывозу.</p>` :
+                `<p>Уважаемый(ая) ${order.user.name}, ваш заказ собран и прибудет ${order.orderDate} на ваш адрес.</p>`;
+
+            await axios.post(`${process.env.API_BASE_URL}/email/send-email-user`, {
+                to: order.user.email,
+                subject: 'Статус вашего заказа',
+                html: emailContent,
+            });
+
+            toast.success('Статус заказа обновлен и письмо отправлено');
+            await fetchOrders(); // Обновляем список заказов после успешного обновления статуса и отправки письма
+        } catch (error) {
+            toast.error('Ошибка при обновлении статуса или отправке письма');
+            console.error('Error updating order status or sending email', error);
+        }
+    };
 
     return (
         <div className={styles.content}>
@@ -38,16 +64,22 @@ export default function OrderForm() {
                                 <td className={styles.email}>
                                     <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
                                 </td>
-                                <td className={styles.orderPlace}>{order.pickup}</td>
+                                <td className={styles.orderPlace}>{order.pickup ? 'Самовывоз' : 'Доставка'}</td>
                                 <td className={styles.orderDate}>{order.orderDate}</td>
                                 <td className={styles.send}>
-                                    <button className={styles.button}>Отправить</button>
+                                    <button 
+                                        className={styles.button} 
+                                        onClick={() => handleSend(order)}
+                                    >
+                                        Отправить
+                                    </button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
+            <ToastContainer position="top-right" />
         </div>
     );
 }
