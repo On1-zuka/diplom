@@ -25,7 +25,7 @@ const Profile = () => {
             toast.success('Данные пользователя успешно сохранены');
         }catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
-                toast.error('Ошибка при сохранении данных пользователя');
+                toast.error('Проверьте заполненные данные');
             } else {
               toast.error('неизвестная ошибка');
             }

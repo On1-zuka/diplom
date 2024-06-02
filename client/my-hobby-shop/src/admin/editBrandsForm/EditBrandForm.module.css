@@ -1,0 +1,35 @@
+.content{
+    width: 800px;
+}
+.title{
+    font-size: 30px;
+    margin: 0px 0px 20px 0px;
+}
+.underTitle{
+    margin: 0px 0px 10px 0px;
+}
+.table{
+    width: 100%;
+    font-size: 16px;
+    border-collapse: collapse;
+    margin: 0px 0px 20px 0px;
+}
+th,
+.nameBrands,.delete {
+    border: 1px solid #bebebe; 
+    padding: 8px; 
+}
+.nameBrands:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
+.delete{
+    border: 1px solid #bebebe; 
+    text-align: center;
+    color: #bebebe;
+    width: 50px;
+}
+.delete:hover{
+    cursor: pointer;
+    color: black;
+}

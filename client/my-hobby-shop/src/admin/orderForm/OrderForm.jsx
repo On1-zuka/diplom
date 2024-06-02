@@ -25,6 +25,7 @@ export default function OrderForm() {
                     <thead>
                         <tr>
                             <th>ФИО</th>
+                            <th>Почта</th>
                             <th>Тип доставки</th>
                             <th>Дата</th>
                             <th></th>
@@ -34,6 +35,9 @@ export default function OrderForm() {
                         {orders.map(order => (
                             <tr key={order.id}>
                                 <td className={styles.name}>{`${order.user.surname} ${order.user.name} ${order.user.patronymic}`}</td>
+                                <td className={styles.email}>
+                                    <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
+                                </td>
                                 <td className={styles.orderPlace}>{order.pickup}</td>
                                 <td className={styles.orderDate}>{order.orderDate}</td>
                                 <td className={styles.send}>

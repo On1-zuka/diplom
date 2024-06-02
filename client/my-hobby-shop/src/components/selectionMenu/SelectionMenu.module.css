@@ -45,3 +45,8 @@
     transition: all 0.2s;
     cursor: pointer;
 }
+.loginMenu, .emailMenu {
+    word-wrap: break-word; /* для поддержки старых браузеров */
+    overflow-wrap: break-word; /* для современных браузеров */
+    line-height: 24px;
+}

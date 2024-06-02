@@ -16,22 +16,32 @@
 }
 th,
 .name, .orderPlace,.orderDate,
-.send {
+.send,.email {
     border: 1px solid #bebebe; 
     padding: 8px; 
     text-align: center;
 }
 .name{
-    width: 350px;
+    width: 250px;
     line-height: 16px;
+    word-wrap: break-word; /* Ensures long words break and wrap onto the next line */
+    word-break: break-all; /* Breaks text at any character to ensure it fits within the container */
+    white-space: normal; /* Ensures the text wraps to the next line */
+    overflow-wrap: break-word;
 }
 .orderPlace,
 .orderDate{
-    width: 150px;
+    width: 100px;
 }
 .send{
-    width: 150px;
+    width: 100px;
 }
+.email {
+    word-wrap: break-word; /* Ensures long words break and wrap onto the next line */
+    word-break: break-all; /* Breaks text at any character to ensure it fits within the container */
+    white-space: normal; /* Ensures the text wraps to the next line */
+    overflow-wrap: break-word; /* Another way to ensure long words wrap */
+  }
 .button{
     width: 90px;
     padding: 5px;

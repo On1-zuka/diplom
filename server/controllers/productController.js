@@ -21,6 +21,28 @@ class ProductController {
                 return next(ApiError.badRequest("Пожалуйста, заполните все поля"));
             }
     
+            for (const [key, value] of Object.entries(req.body)) {
+                if (typeof value === 'string' && !value.trim()) {
+                    return next(ApiError.badRequest(`Поле(я) не должно быть пустым или содержать только пробелы`));
+                }
+            }
+            
+            if ('name' in req.body && req.body.name.length > 150) {
+                return next(ApiError.badRequest("Поле название не должно превышать 150 символов"));
+            }
+            if ('description' in req.body && req.body.description.length > 500) {
+                return next(ApiError.badRequest("Поле описания не должно превышать 500 символов"));
+            }
+            if ('country' in req.body && req.body.country.length > 50) {
+                return next(ApiError.badRequest("Поле Страна не должно превышать 50 символов"));
+            }
+            if ('purpose' in req.body && req.body.purpose.length > 100) {
+                return next(ApiError.badRequest("Поле предназначение не должно превышать 100 символов"));
+            }
+            if ('article' in req.body && req.body.article.length > 5) {
+                return next(ApiError.badRequest("Поле артикул не должно превышать 5 символов"));
+            }
+
             const parsedPrice = parseFloat(price);
             if (isNaN(parsedPrice) || parsedPrice <= 0) {
                 return next(ApiError.badRequest("Некорректное значение цены"));
