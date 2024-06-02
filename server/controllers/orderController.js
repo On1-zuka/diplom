@@ -109,7 +109,7 @@ class OrderController {
                 return {
                     ...cart.toJSON(),
                     orderDate: cart.orderDate ? new Date(cart.orderDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : null,
-                    pickup: cart.pickup ? 'Из магазина' : 'На дом'
+                    
                 };
             });
 
