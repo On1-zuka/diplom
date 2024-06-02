@@ -25,7 +25,8 @@ import OrderForm from "./admin/orderForm/OrderForm";
 import EditBrandsForm from "./admin/editBrandsForm/editBrandForm";
 import EditBrands from "./admin/editBrands/EditBrands";
 import AddBrands from "./admin/addBrands/AddBrands";
-
+import EditCategoriesForm from "./admin/editCategoriesForm/EditCategoriesForm";
+import EditCategories from "./admin/editCategories/EditCategories"
 
 const router = createBrowserRouter([
     {
@@ -65,6 +66,8 @@ const router = createBrowserRouter([
                     { path: "editBrands", element: <EditBrandsForm/>},
                     { path: "editBrands/brand/:id", element: <EditBrands/>},
                     { path: "addBrands", element: <AddBrands/>},
+                    { path: "editCategories", element: <EditCategoriesForm/>},
+                    { path: "editCategories/category/:id", element: <EditCategories/> },
                 ]
             },
             {

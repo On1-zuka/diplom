@@ -3,6 +3,7 @@ const ApiError = require('../error/ApiError')
 const uuid = require('uuid')
 const path = require('path')
 const mime = require('mime-types');
+const fs = require('fs');
 
 class CategoryController {
     async create(req, res, next) {

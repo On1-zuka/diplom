@@ -16,7 +16,7 @@ export default function SelectionAdmin() {
                                     <li onClick={() => navigate('/admin/addProducts')}>Добавление товаров</li>
                                     <li onClick={() => navigate('/admin/editBrands')}>Изменение и удаление брендов</li>
                                     <li onClick={() => navigate('/admin/addBrands')}>Добавление брендов</li>
-                                    <li>Изменение и удаление категории</li>
+                                    <li onClick={() => navigate('/admin/editCategories')}>Изменение и удаление категории</li>
                                     <li>Добавление категории</li>
                                     <li>Выход</li>
                                 </ul>
