@@ -24,7 +24,7 @@ import AddProductsForm from "./admin/addProductsForm/AddProductsForm";
 import OrderForm from "./admin/orderForm/OrderForm"; 
 import EditBrandsForm from "./admin/editBrandsForm/editBrandForm";
 import EditBrands from "./admin/editBrands/EditBrands";
-
+import AddBrands from "./admin/addBrands/AddBrands";
 
 
 const router = createBrowserRouter([
@@ -63,7 +63,8 @@ const router = createBrowserRouter([
                     { path: "addProducts", element: <AddProductsForm/> },
                     { path: "order",element: <OrderForm/>},
                     { path: "editBrands", element: <EditBrandsForm/>},
-                    { path: "editBrands/brand/:id", element: <EditBrands/>}
+                    { path: "editBrands/brand/:id", element: <EditBrands/>},
+                    { path: "addBrands", element: <AddBrands/>},
                 ]
             },
             {
