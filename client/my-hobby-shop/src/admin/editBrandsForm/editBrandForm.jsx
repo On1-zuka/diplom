@@ -3,28 +3,32 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios'
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function EditBrandsForm() {
     const [brands, setBrands] = useState([]);
 
+    const fetchBrands = async () => {
+        try {
+            const response = await axios.get(`${process.env.API_BASE_URL}/brands`);
+            setBrands(response.data);
+        } catch (error) {
+            toast.error(`Ошибка при получении данных: ${error.response?.data?.message || error.message}`);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`${process.env.API_BASE_URL}/brands`);
-                setBrands(response.data);
-            } catch (error) {
-                toast.error(`Ошибка при получении данных: ${error.response?.data?.message || error.message}`);
-            }
-        };
-        fetchData();
+        fetchBrands();
     }, []);
 
     const handleDelete = async (id) => {
         try {
             await axios.delete(`${process.env.API_BASE_URL}/brands/${id}`);
-            setBrands(brands.filter(brand => brand.id !== id));
+            toast.success('Бренд успешно удален');
+            fetchBrands();
         } catch (error) {
-            toast.error(`Ошибка при удалении товара: ${error.response?.data?.message || error.message}`);
+            toast.error(`Ошибка при удалении бренда: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -44,9 +48,9 @@ export default function EditBrandsForm() {
                         {brands.map((brand) => (
                             <tr key={brand.id} className={styles.lineTable}>
                                 <td className={styles.nameBrands}>
-                                <Link to={`/admin/editBrands/brand/${brand.id}`}>
-                                    {brand.name}
-                                </Link>
+                                    <Link to={`/admin/editBrands/brand/${brand.id}`}>
+                                        {brand.name}
+                                    </Link>
                                 </td>
                                 <td className={styles.delete} onClick={() => handleDelete(brand.id)}>
                                     <DeleteIcon />
@@ -56,6 +60,7 @@ export default function EditBrandsForm() {
                     </tbody>
                 </table>
             </div>
+            <ToastContainer position="top-right" />
         </div>
-    )
+    );
 }

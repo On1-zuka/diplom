@@ -1,8 +1,28 @@
+import axios from 'axios';
 import styles from './SelectionAdmin.module.css'
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from '../../context/AuthContext';
+import { useUser } from '../../context/UserContext';
+import { ToastContainer, toast } from 'react-toastify';
 
 export default function SelectionAdmin() {
     const navigate = useNavigate();
+
+    const {logout} = useAuth();
+    const {setUser} = useUser();
+
+    const handleLogout = async () => {
+        try {
+            await axios.post(`${process.env.API_BASE_URL}/users/logout`, null, {
+                withCredentials: true,
+            });
+            logout();
+            setUser(null);
+            navigate('/');
+        } catch (error) {
+            toast.error('Ошибка при выходе из аккаунта:');
+        }
+    };
     return (
         <div className={styles.main}>
             <section className={styles.selectionPage}>
@@ -18,7 +38,7 @@ export default function SelectionAdmin() {
                                     <li onClick={() => navigate('/admin/addBrands')}>Добавление брендов</li>
                                     <li onClick={() => navigate('/admin/editCategories')}>Изменение и удаление категории</li>
                                     <li onClick={()=> navigate('/admin/addCategories')}>Добавление категории</li>
-                                    <li>Выход</li>
+                                    <li onClick={handleLogout}>Выход</li>
                                 </ul>
                             </div>
                         </div>
