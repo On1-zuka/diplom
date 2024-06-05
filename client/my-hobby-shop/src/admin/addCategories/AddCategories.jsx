@@ -40,7 +40,7 @@ export default function AddCategories(){
 
     return (
         <div className={styles.content}>
-            <div className={styles.title}>Добавление брендов</div>
+            <div className={styles.title}>Добавление категории</div>
             <form className={styles.editForm} onSubmit={handleSubmit}>
                 <div className={styles.edit}>
                     <div className={styles.text}>Название:</div>

@@ -15,6 +15,7 @@ export default function CartPage() {
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedTime, setSelectedTime] = useState('');
     const [isChecked, setIsChecked] = useState(false);
+    const [isQuantityExceeded, setIsQuantityExceeded] = useState(false);
     const [userData, setUserData] = useState({
         id: '',
         login: '',
@@ -113,28 +114,38 @@ export default function CartPage() {
         setSelectedTime(timeString);
     };
 
+    const handleQuantityExceeded = (exceeded) => {
+        setIsQuantityExceeded(exceeded);
+    };
+
     // Обработчик завершения оформления заказа
     const handlePayment = async (event) => {
         event.preventDefault();
+    
+        if (isQuantityExceeded) {
+            toast.error('Невозможно оформить заказ: количество товаров в корзине превышает доступное количество.');
+            return;
+        }
+    
         if (deliveryMethod !== 'courier' && deliveryMethod !== 'pickup') {
             toast.error('Выберите способ доставки');
             return;
         }
-
+    
         if (deliveryMethod === 'courier' && (!selectedDate || !selectedTime)) {
             toast.error('Выберите дату и время для доставки');
             return;
         }
-
+    
         if (paymentMethod !== 'receipt' && paymentMethod !== 'card') {
             toast.error('Выберите способ оплаты');
             return;
         }
-
+    
         const currentDate = moment();
         const orderDate = deliveryMethod === 'pickup' && !selectedDate ? currentDate.format('DD.MM.YYYY') : selectedDate;
         const orderTime = deliveryMethod === 'pickup' && !selectedTime ? currentDate.format('HH:mm') : selectedTime;
-
+    
         const orderData = {
             orderDate,
             pickup: deliveryMethod === 'pickup',
@@ -142,25 +153,18 @@ export default function CartPage() {
             finalPrice: totalPrice.toFixed(2),
             usePoints: isChecked
         };
-
+    
         try {
-            // Создание заказа
             const response = await axios.post(`${process.env.API_BASE_URL}/order/create-order`, orderData, { withCredentials: true });
             const { finalPrice } = response.data;
             const { scoresUsed } = response.data;
-
-            // Отправка email пользователю и администратору
+    
             await sendEmail(userData.email, scoresUsed, productCard, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities);
-
-            // Удаление всех товаров из корзины и обновление количества товаров на складе
+    
             await clearCart();
-
+    
             setIsModalOpen(true);
-
-            setTimeout(() => {
-                navigate('/')
-            }, 8000);
-
+    
         } catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
                 toast.error(` ${error.response.data.message}`);
@@ -300,6 +304,7 @@ export default function CartPage() {
                                     productId={product.id}
                                     updateProductList={updateProductList}
                                     updateTotalPrice={setTotalPrice}
+                                    onQuantityExceeded={handleQuantityExceeded}
                                 />
                             ))}
                         </div>
@@ -394,14 +399,14 @@ export default function CartPage() {
                                         name="paymentMethod"
                                         checked={paymentMethod === 'receipt'}
                                         onChange={() => { }} />
-                                    Оплата наличными при получении
+                                    Оплата наличными
                                 </div>
                                 <div className={styles.payCard} onClick={() => handleDivClickPay('card')}>
                                     <input type="radio" className={styles.way}
                                         name="paymentMethod"
                                         checked={paymentMethod === 'card'}
                                         onChange={() => { }} />
-                                    Оплата картой при получении
+                                    Оплата картой
                                 </div>
                             </div>
                             <div className={styles.titlePoint}>5. Оформление заказа</div>

@@ -17,9 +17,9 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/menu/profile')
+      navigate('/menu/profile');
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,8 +30,13 @@ const LoginPage = () => {
       if (response.data) {
         setUser(response.data.user);
         login();
-      }
 
+        if (response.data.user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/menu/profile');
+        }
+      }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
         toast.error(`Ошибка авторизации: ${error.response.data.message}`);

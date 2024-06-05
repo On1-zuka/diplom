@@ -10,8 +10,8 @@ import noStock from "../../assets/Error/OutOfStock.jpg"
 
 export default function CatalogPage() {
     const [products, setProducts] = useState([]);
-    const [maxPrice, setMaxPrice] = useState(100);
-    const [priceRange, setPriceRange] = useState([0, maxPrice]);
+    const [maxPrice, setMaxPrice] = useState(null); // Изменено здесь
+    const [priceRange, setPriceRange] = useState([0, 100]); // Начальное значение изменено
     const [sortOption, setSortOption] = useState("");
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(5);
@@ -24,6 +24,9 @@ export default function CatalogPage() {
     const { id } = useParams();
     const location = useLocation();
 
+    const isBrandPath = location.pathname.includes('brands/catalog');
+    const isCategoryPath = location.pathname.includes('categories/catalog');
+
     useEffect(() => {
         fetchCategories();
         fetchBrands();
@@ -34,11 +37,14 @@ export default function CatalogPage() {
         fetchData();
     }, [page, limit]);
 
+    useEffect(() => {
+        if (maxPrice !== null) {
+            setPriceRange([0, maxPrice]); // Обновление priceRange при изменении maxPrice
+        }
+    }, [maxPrice]);
+
     const fetchData = async () => {
         try {
-            const isBrandPath = location.pathname.includes('brands/catalog');
-            const isCategoryPath = location.pathname.includes('categories/catalog');
-
             const brandIds = isBrandPath ? [id, ...selectedBrands].filter(Boolean) : selectedBrands;
             const categoriesId = isCategoryPath ? [id, ...selectedCategories].filter(Boolean) : selectedCategories;
 
@@ -168,32 +174,36 @@ export default function CatalogPage() {
                                     <button type="reset" className={styles.hideFilter} onClick={updatePage}>
                                         Сбросить фильтр(ы) и сортировку
                                     </button>
-                                    <div className={styles.category}>
-                                        <p className={styles.selectName}>Категории</p>
-                                        <div className={styles.list}>
-                                            {categories.map((category) => (
-                                                <Checkbox
-                                                    key={category.id}
-                                                    label={category.name}
-                                                    checked={selectedCategories.includes(category.id)}
-                                                    onChange={() => handleCategoryChange(category.id)}
-                                                />
-                                            ))}
+                                    {!isCategoryPath && (
+                                        <div className={styles.category}>
+                                            <p className={styles.selectName}>Категории</p>
+                                            <div className={styles.list}>
+                                                {categories.map((category) => (
+                                                    <Checkbox
+                                                        key={category.id}
+                                                        label={category.name}
+                                                        checked={selectedCategories.includes(category.id)}
+                                                        onChange={() => handleCategoryChange(category.id)}
+                                                    />
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className={styles.brand}>
-                                        <p className={styles.selectName}>Бренды</p>
-                                        <div className={styles.list}>
-                                            {brands.map((brand) => (
-                                                <Checkbox
-                                                    key={brand.id}
-                                                    label={brand.name}
-                                                    checked={selectedBrands.includes(brand.id)}
-                                                    onChange={() => handleBrandChange(brand.id)}
-                                                />
-                                            ))}
+                                    )}
+                                    {!isBrandPath && (
+                                        <div className={styles.brand}>
+                                            <p className={styles.selectName}>Бренды</p>
+                                            <div className={styles.list}>
+                                                {brands.map((brand) => (
+                                                    <Checkbox
+                                                        key={brand.id}
+                                                        label={brand.name}
+                                                        checked={selectedBrands.includes(brand.id)}
+                                                        onChange={() => handleBrandChange(brand.id)}
+                                                    />
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                     <div className={styles.stock}>
                                         <p className={styles.selectName}>В наличии</p>
                                         <div className={styles.pointStock}>

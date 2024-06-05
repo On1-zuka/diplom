@@ -52,6 +52,11 @@ export default function Header() {
                     <Link to="/" className={styles.logo}>
                         <img src={logo} alt="Логотип" className={styles.logo__img} />
                     </Link>
+                    <Link to='/catalog' className={styles.link_catalog}>
+                        <button className={styles.catalogButton}>
+                            Каталог
+                        </button>
+                    </Link>
                     <div className={styles.search__bar} onClick={handleSearchClick}>
                         <button className={styles.search__bar__btn}>
                             <SearchIcon />
@@ -72,13 +77,6 @@ export default function Header() {
                             >
                                 <PersonIcon />
                                 Профиль
-                            </li>
-                            <li
-                                className={styles.menu__list__items}
-                                onClick={() => navigate("/admin")}
-                            >
-                                < AdminPanelSettingsIcon />
-                                Aдмин
                             </li>
                             <li
                                 className={styles.menu__list__items}

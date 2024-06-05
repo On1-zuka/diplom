@@ -12,7 +12,7 @@ export default function Footer() {
                         <li className={styles.footer__menu__item}><p className={styles.footer__menu__title}>Компания</p></li>
                         <li className={styles.footer__menu__item}><Link to='/brands' className={styles.footer__menu__link}>Бренды</Link></li>
                         <li className={styles.footer__menu__item}><Link to='/contacts' className={styles.footer__menu__link}>Контакты</Link></li>
-                        <li className={styles.footer__menu__item}><Link to='/' className={styles.footer__menu__link}>Как оформить заказ</Link></li>
+                        <li className={styles.footer__menu__item}><Link to='/decoration' className={styles.footer__menu__link}>Как оформить заказ</Link></li>
                     </ul>
                     <ul className={styles.menu__list}>
                         <li className={styles.footer__menu__item}><p className={styles.footer__menu__title}>Сервис и помощь</p></li>
@@ -21,7 +21,7 @@ export default function Footer() {
                     </ul>
                     <ul className={styles.menu__list}>
                         <li className={styles.footer__menu__item}><p className={styles.footer__menu__title}>Выгодно</p></li>
-                        <li className={styles.footer__menu__item}><Link to='/' className={styles.footer__menu__link}>Баллы</Link></li>
+                        <li className={styles.footer__menu__item}><Link to='/ball' className={styles.footer__menu__link}>Баллы</Link></li>
                     </ul>
                     <ul className={styles.menu__list}>
                         <li className={styles.footer__menu__item}><p className={styles.footer__menu__title}>Обратная связь</p></li>

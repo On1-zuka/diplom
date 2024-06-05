@@ -14,20 +14,23 @@ import CatalogProductCard from "./components/catalogProductCard/CatalogProductCa
 import MainProductCard from "./components/mainProductCard/MainProductCard";
 import Delivery from "./page/delivery/Delivery";
 import Pay from "./page/pay/Pay";
-import ProtectedRoute from './protectedRoute'; 
+import ProtectedRoute from './protectedRoute';
 import About from "./page/about/About";
 import Contacts from "./page/contacts/Contacts";
 import SelectionAdmin from './admin/selectionAdmin/SelectionAdmin'
 import EditProducts from "./admin/editProducts/EditProduct";
 import EditProductsForm from "./admin/editProductsForm/EditProductsForm";
 import AddProductsForm from "./admin/addProductsForm/AddProductsForm";
-import OrderForm from "./admin/orderForm/OrderForm"; 
+import OrderForm from "./admin/orderForm/OrderForm";
 import EditBrandsForm from "./admin/editBrandsForm/editBrandForm";
 import EditBrands from "./admin/editBrands/EditBrands";
 import AddBrands from "./admin/addBrands/AddBrands";
 import EditCategoriesForm from "./admin/editCategoriesForm/EditCategoriesForm";
 import EditCategories from "./admin/editCategories/EditCategories";
 import AddCategories from "./admin/addCategories/AddCategories";
+import SubmitPlace from "./page/submitPlace/SubmitPlace";
+import Ball from "./page/ball/Ball"
+
 
 const router = createBrowserRouter([
     {
@@ -48,6 +51,8 @@ const router = createBrowserRouter([
             { path: "/payment", element: <Pay /> },
             { path: "/about", element: <About /> },
             { path: "/contacts", element: <Contacts /> },
+            { path: "/decoration", element: <SubmitPlace /> },
+            { path: "/ball", element: <Ball/>},
             {
                 path: "/menu",
                 element: <ProtectedRoute element={<SelectionMenu />} />,
@@ -58,18 +63,18 @@ const router = createBrowserRouter([
             },
             {
                 path: "/admin",
-                element: <SelectionAdmin />,  
-                children:[
-                    { path: "editProducts", element: <EditProducts/>},
-                    { path: "editProducts/product/:id", element: <EditProductsForm/>},
-                    { path: "addProducts", element: <AddProductsForm/> },
-                    { path: "order",element: <OrderForm/>},
-                    { path: "editBrands", element: <EditBrandsForm/>},
-                    { path: "editBrands/brand/:id", element: <EditBrands/>},
-                    { path: "addBrands", element: <AddBrands/>},
-                    { path: "editCategories", element: <EditCategoriesForm/>},
-                    { path: "editCategories/category/:id", element: <EditCategories/> },
-                    { path: "addCategories", element: <AddCategories/>}
+                element: <SelectionAdmin />,
+                children: [
+                    { path: "editProducts", element: <EditProducts /> },
+                    { path: "editProducts/product/:id", element: <EditProductsForm /> },
+                    { path: "addProducts", element: <AddProductsForm /> },
+                    { path: "order", element: <OrderForm /> },
+                    { path: "editBrands", element: <EditBrandsForm /> },
+                    { path: "editBrands/brand/:id", element: <EditBrands /> },
+                    { path: "addBrands", element: <AddBrands /> },
+                    { path: "editCategories", element: <EditCategoriesForm /> },
+                    { path: "editCategories/category/:id", element: <EditCategories /> },
+                    { path: "addCategories", element: <AddCategories /> }
                 ]
             },
             {

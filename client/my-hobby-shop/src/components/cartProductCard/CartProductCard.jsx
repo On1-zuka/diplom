@@ -8,13 +8,14 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-export default function CartProductCard({ product, productId, updateProductList, updateTotalPrice}) {
+export default function CartProductCard({ product, productId, updateProductList, updateTotalPrice, onQuantityExceeded }) {
     const [showToast, setShowToast] = useState(false);
     const [inputQuantity, setInputQuantity] = useState(product.quantity);
     const [totalPrice, setTotalPrice] = useState((product.product.price * product.quantity).toFixed(2));
     const maxQuantity = product.product.quantity_product;
     const [displayQuantity, setDisplayQuantity] = useState(product.quantity);
     const [showQuantityMessage, setShowQuantityMessage] = useState(true);
+    const [isQuantityExceeded, setIsQuantityExceeded] = useState(false);
 
     useEffect(() => {
         setTotalPrice((inputQuantity * product.product.price).toFixed(2));
@@ -52,7 +53,8 @@ export default function CartProductCard({ product, productId, updateProductList,
             setDisplayQuantity(newQuantity);
             calculateTotalPrice(newQuantity);
             updateTotalPrice(prevTotalPrice => prevTotalPrice + product.product.price);
-           
+        } else {
+            toast.error(`Максимально доступное количество товара: ${maxQuantity}`);
         }
     };
 
@@ -70,7 +72,6 @@ export default function CartProductCard({ product, productId, updateProductList,
             if (newQuantity < product.product.quantity_product) {
                 setShowQuantityMessage(false);
             }
-           
         }
     };
 
@@ -83,13 +84,13 @@ export default function CartProductCard({ product, productId, updateProductList,
         const value = e.target.value;
         if (/^\d*$/.test(value)) {
             const newValue = value === '' ? '' : Math.min(parseInt(value), product.product.quantity);
-            if (newValue > 0) {
+            if (newValue > 0 && newValue <= maxQuantity) {
                 setInputQuantity(newValue);
                 setDisplayQuantity(newValue);
                 calculateTotalPrice(newValue);
                 updateTotalPrice(product.product.price * newValue);
-            } else {
-                return;
+            } else if (newValue > maxQuantity) {
+                toast.error(`Максимально доступное количество товара: ${maxQuantity}`);
             }
         }
     };
@@ -101,6 +102,16 @@ export default function CartProductCard({ product, productId, updateProductList,
             withCredentials: true,
         })
     };
+
+    useEffect(() => {
+        if (inputQuantity > maxQuantity) {
+            setIsQuantityExceeded(true);
+            onQuantityExceeded(true);
+        } else {
+            setIsQuantityExceeded(false);
+            onQuantityExceeded(false);
+        }
+    }, [inputQuantity, maxQuantity, onQuantityExceeded]);
 
     return (
         <form action="" className={styles.formCard}>

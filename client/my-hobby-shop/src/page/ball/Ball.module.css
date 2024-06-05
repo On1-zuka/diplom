@@ -1,0 +1,19 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.innerContainer {
+    margin: 20px 0px 0px 0px;
+    text-align: left;
+}
+
+.deliveryText {
+    margin: 20px 0px 20px 0px;
+    width: 800px;
+}
+.text{
+    font-size: 16px;
+    line-height: 34px;
+}
