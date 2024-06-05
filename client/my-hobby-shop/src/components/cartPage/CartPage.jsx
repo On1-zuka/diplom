@@ -122,23 +122,31 @@ export default function CartPage() {
     const handlePayment = async (event) => {
         event.preventDefault();
     
-        if (isQuantityExceeded) {
-            toast.error('Невозможно оформить заказ: количество товаров в корзине превышает доступное количество.');
-            return;
-        }
+        const validateInput = () => {
+            if (!['courier', 'pickup'].includes(deliveryMethod)) {
+                toast.error('Выберите способ доставки');
+                return false;
+            }
+        
+            if (deliveryMethod === 'courier' && (!selectedDate || !selectedTime)) {
+                toast.error('Выберите дату и время для доставки');
+                return false;
+            }
+        
+            if (!['receipt', 'card'].includes(paymentMethod)) {
+                toast.error('Выберите способ оплаты');
+                return false;
+            }
     
-        if (deliveryMethod !== 'courier' && deliveryMethod !== 'pickup') {
-            toast.error('Выберите способ доставки');
-            return;
-        }
+            if (isQuantityExceeded) {
+                toast.error('Невозможно оформить заказ: количество товаров в корзине превышает доступное количество.');
+                return false;
+            }
     
-        if (deliveryMethod === 'courier' && (!selectedDate || !selectedTime)) {
-            toast.error('Выберите дату и время для доставки');
-            return;
-        }
+            return true;
+        };
     
-        if (paymentMethod !== 'receipt' && paymentMethod !== 'card') {
-            toast.error('Выберите способ оплаты');
+        if (!validateInput()) {
             return;
         }
     
@@ -156,21 +164,16 @@ export default function CartPage() {
     
         try {
             const response = await axios.post(`${process.env.API_BASE_URL}/order/create-order`, orderData, { withCredentials: true });
-            const { finalPrice } = response.data;
-            const { scoresUsed } = response.data;
+            const { finalPrice, scoresUsed } = response.data;
     
             await sendEmail(userData.email, scoresUsed, productCard, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities);
-    
             await clearCart();
     
             setIsModalOpen(true);
     
         } catch (error) {
-            if (error.response && error.response.data && error.response.data.message) {
-                toast.error(` ${error.response.data.message}`);
-            } else {
-                toast.error('Неизвестная ошибка');
-            }
+            const errorMessage = error.response?.data?.message || 'Неизвестная ошибка';
+            toast.error(errorMessage);
         }
     };
 
@@ -417,6 +420,7 @@ export default function CartPage() {
                                     Использовать баллы?
                                 </div>
                             </div>
+                            <ToastContainer />
                         </form>
                     )}
                 </div>
@@ -424,7 +428,7 @@ export default function CartPage() {
              {isModalOpen && (
                 <ModalCart onClose={() => setIsModalOpen(false)} />
             )}
-            <ToastContainer />
+            
         </div>
     );
 }

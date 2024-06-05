@@ -161,7 +161,6 @@ export default function CartProductCard({ product, productId, updateProductList,
                     <DeleteIcon className={styles.delete} onClick={handleDeleteWrapper(productId)} />
                 </div>
             </div>
-            <ToastContainer />
         </form>
     );
 }
