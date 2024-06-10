@@ -75,14 +75,26 @@ export default function RegistrationPage() {
 
     const sendEmail = async (email) => {
         try {
+            const emailContent = `
+                <div style="background-color: #f2f2f2; padding: 20px; border-radius: 5px;">
+                    <h2>Добро пожаловать!</h2>
+                    <p>Мы рады приветствовать вас. Ваша регистрация прошла успешно.</p>
+                    <p>Данные для входа:</p>
+                    <ul>
+                        <li><strong>Почта:</strong> ${regForm.email}</li
+                        <li><strong>Пароль:</strong> ${regForm.password}</li>
+                    </ul>
+                </div>
+            `;
+    
             const updatedFormData = {
                 to: email,
                 subject: 'Добро пожаловать!',
-                html: '',
+                html: emailContent,
             };
-
+    
             setFormData(updatedFormData);
-
+    
             await axios.post(`${process.env.API_BASE_URL}/email/send-email-user`, updatedFormData);
             toast.success('Электронное письмо успешно отправлено!');
             navigate('/authorization');

@@ -71,7 +71,7 @@ export default function SelectionMenu(){
                             <div className={styles.headerMenu}>
                                 <div className={styles.loginMenu}>{userData.login}</div>
                                 <div className={styles.emailMenu}>{userData.email}</div>
-                                <div className={styles.scores}>Ваши быллы: <span>{userData.scores}</span></div>
+                                <div className={styles.scores}>Ваши баллы: <span>{userData.scores}</span></div>
                             </div>
                             <div className={styles.bottomMenu}>
                                 <ul className={styles.listMenu}>

@@ -12,7 +12,12 @@ export default function EditProducts() {
         const fetchData = async () => {
             try {
                 const response = await axios.get(`${process.env.API_BASE_URL}/products`);
-                setProducts(response.data.rows);
+                const products = response.data.rows;
+                const uniqueIds = new Set(products.map(product => product.id));
+                if (uniqueIds.size !== products.length) {
+                    console.error('Duplicate IDs found');
+                }
+                setProducts(products);
             } catch (error) {
                 toast.error(`Ошибка при получении данных: ${error.response?.data?.message || error.message}`);
             }

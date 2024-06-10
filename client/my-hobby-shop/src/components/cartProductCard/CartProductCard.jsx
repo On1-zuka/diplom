@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-export default function CartProductCard({ product, productId, updateProductList, updateTotalPrice, onQuantityExceeded }) {
+export default function CartProductCard({ product, productId, updateProductList, updateTotalPrice, onQuantityExceeded, newQuantity }) {
     const [showToast, setShowToast] = useState(false);
     const [inputQuantity, setInputQuantity] = useState(product.quantity);
     const [totalPrice, setTotalPrice] = useState((product.product.price * product.quantity).toFixed(2));
@@ -56,6 +56,7 @@ export default function CartProductCard({ product, productId, updateProductList,
         } else {
             toast.error(`Максимально доступное количество товара: ${maxQuantity}`);
         }
+        checkQuantityExceeded(newQuantity);
     };
 
     const handleDecrement = () => {
@@ -73,11 +74,7 @@ export default function CartProductCard({ product, productId, updateProductList,
                 setShowQuantityMessage(false);
             }
         }
-    };
-
-    const calculateTotalPrice = (newQuantity) => {
-        const newTotalPrice = (product.product.price * newQuantity).toFixed(2);
-        setTotalPrice(newTotalPrice);
+        checkQuantityExceeded(newQuantity);
     };
 
     const handleChangeQuantity = (e) => {
@@ -93,6 +90,22 @@ export default function CartProductCard({ product, productId, updateProductList,
                 toast.error(`Максимально доступное количество товара: ${maxQuantity}`);
             }
         }
+        checkQuantityExceeded(newValue);
+    };
+
+    const calculateTotalPrice = (newQuantity) => {
+        const newTotalPrice = (product.product.price * newQuantity).toFixed(2);
+        setTotalPrice(newTotalPrice);
+    };
+
+    const checkQuantityExceeded = (newQuantity) => {
+        if (newQuantity > maxQuantity) {
+            setIsQuantityExceeded(true);
+            onQuantityExceeded(true);
+        } else {
+            setIsQuantityExceeded(false);
+            onQuantityExceeded(false);
+        }
     };
 
     const updateQuantityOnServer = (newQuantity) => {
@@ -104,13 +117,7 @@ export default function CartProductCard({ product, productId, updateProductList,
     };
 
     useEffect(() => {
-        if (inputQuantity > maxQuantity) {
-            setIsQuantityExceeded(true);
-            onQuantityExceeded(true);
-        } else {
-            setIsQuantityExceeded(false);
-            onQuantityExceeded(false);
-        }
+        checkQuantityExceeded(inputQuantity);
     }, [inputQuantity, maxQuantity, onQuantityExceeded]);
 
     return (

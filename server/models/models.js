@@ -21,7 +21,7 @@ const Cart = sequelize.define('cart', {
     orderDate: { type: DataTypes.DATE },
     pickup: { type: BOOLEAN },
     orderTime:{ type: DataTypes.STRING},
-    finalPrice: {type: DataTypes.INTEGER}
+    finalPrice: {type: DataTypes.REAL}
 })
 
 const Cart_product = sequelize.define('cart_product', {
@@ -55,19 +55,10 @@ const Products = sequelize.define('products', {
     article: { type: DataTypes.STRING, allowNull: false },
 })
 
-const Favorite = sequelize.define('favorite', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-})
-
-const Favorite_product = sequelize.define('favorite_product', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-})
 
 User.hasOne(Cart)
 Cart.belongsTo(User)
 
-User.hasOne(Favorite)
-Cart.belongsTo(User)
 
 Brands.hasMany(Products)
 Products.belongsTo(Brands)
@@ -81,9 +72,6 @@ Products.hasMany(Cart_product, { foreignKey: 'productId' });
 Cart.belongsToMany(Products, { through: Cart_product });
 Products.belongsToMany(Cart, { through: Cart_product });
 
-Favorite.belongsToMany(Products, { through: Favorite_product })
-Products.belongsToMany(Favorite, { through: Favorite_product })
-
 module.exports = {
     User,
     Cart,
@@ -91,6 +79,4 @@ module.exports = {
     Brands,
     Categories,
     Products,
-    Favorite,
-    Favorite_product
 }

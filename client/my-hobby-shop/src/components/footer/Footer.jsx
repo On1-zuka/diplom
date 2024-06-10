@@ -25,8 +25,12 @@ export default function Footer() {
                     </ul>
                     <ul className={styles.menu__list}>
                         <li className={styles.footer__menu__item}><p className={styles.footer__menu__title}>Обратная связь</p></li>
-                        <li className={styles.footer__menu__item}>Email: kuleshilja@yandex.by</li>
-                        <li className={styles.footer__menu__item}>Телефон: +375 (44) 788 20 35</li>
+                        <li className={styles.footer__menu__item}>
+                            <a href="mailto:myhobbya75@gmail.com">Email: myhobbya75@gmail.com</a>
+                        </li>
+                        <li className={styles.footer__menu__item}>
+                            <a href="tel:+375447882035">Телефон: +375 (44) 788 20 35</a>
+                        </li>
                     </ul>
                 </div>
                 <div className={styles.footer__bottom}>

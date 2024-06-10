@@ -11,7 +11,7 @@ import noStock from "../../assets/Error/OutOfStock.jpg"
 export default function CatalogPage() {
     const [products, setProducts] = useState([]);
     const [maxPrice, setMaxPrice] = useState(null); // Изменено здесь
-    const [priceRange, setPriceRange] = useState([0, 100]); // Начальное значение изменено
+    const [priceRange, setPriceRange] = useState([0, 1000]); // Начальное значение изменено
     const [sortOption, setSortOption] = useState("");
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(5);

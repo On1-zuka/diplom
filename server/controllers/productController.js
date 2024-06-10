@@ -94,7 +94,7 @@ class ProductController {
         try {
             let { brandId, categoryId, limit, page, minPrice, maxPrice, inStock } = req.query;
             page = page || 1;
-            limit = limit || 9;
+            limit = limit || 1000;
             const offset = page * limit - limit;
             let product;
 

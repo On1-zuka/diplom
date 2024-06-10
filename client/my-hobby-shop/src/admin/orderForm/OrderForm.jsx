@@ -26,20 +26,24 @@ export default function OrderForm() {
             await axios.put(`${process.env.API_BASE_URL}/order/order-status/${order.id}`, { status: 1 });
 
             const emailContent = order.pickup 
-            ? `<p>Уважаемый(ая) ${order.user.name}, ваш заказ готов к самовывозу. Пожалуйста, приходите в наш магазин, чтобы забрать его.</p>` 
-            : `<p>Уважаемый(ая) ${order.user.name}, ваш заказ собран и будет доставлен на ваш адрес. Ожидаемая дата доставки: ${order.orderDate}.</p>`;
-
+                ? `<div style="background-color: #f2f2f2; padding: 20px; border-radius: 5px;">
+                    <h2>Уважаемый(ая) ${order.user.name}, ваш заказ готов к самовывозу.</h2>
+                    <p>Пожалуйста, приходите в наш магазин, чтобы забрать его.</p>
+                  </div>` 
+                : `<div style="background-color: #f2f2f2; padding: 20px; border-radius: 5px;">
+                    <h2>Уважаемый(ая) ${order.user.name}, ваш заказ собран и будет доставлен на ваш адрес.</h2>
+                    <p>Ожидаемая дата доставки: ${order.orderDate}.</p>
+                  </div>`;
             await axios.post(`${process.env.API_BASE_URL}/email/send-email-user`, {
                 to: order.user.email,
-                subject: 'Статус вашего заказа',
+                subject: 'Обновление статуса вашего заказа',
                 html: emailContent,
             });
-
             toast.success('Статус заказа обновлен и письмо отправлено');
             await fetchOrders();
         } catch (error) {
-            toast.error('Ошибка при обновлении статуса или отправке письма');
-            console.error('Error updating order status or sending email', error);
+            toast.error('Произошла ошибка при обновлении статуса заказа или отправке письма');
+            console.error('Ошибка при обновлении статуса заказа или отправке письма', error);
         }
     };
 

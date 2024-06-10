@@ -121,39 +121,40 @@ export default function CartPage() {
     // Обработчик завершения оформления заказа
     const handlePayment = async (event) => {
         event.preventDefault();
-    
+
         const validateInput = () => {
-            if (!['courier', 'pickup'].includes(deliveryMethod)) {
-                toast.error('Выберите способ доставки');
-                return false;
-            }
-        
-            if (deliveryMethod === 'courier' && (!selectedDate || !selectedTime)) {
-                toast.error('Выберите дату и время для доставки');
-                return false;
-            }
-        
-            if (!['receipt', 'card'].includes(paymentMethod)) {
-                toast.error('Выберите способ оплаты');
-                return false;
-            }
-    
+
             if (isQuantityExceeded) {
                 toast.error('Невозможно оформить заказ: количество товаров в корзине превышает доступное количество.');
                 return false;
             }
-    
+
+            if (!['courier', 'pickup'].includes(deliveryMethod)) {
+                toast.error('Выберите способ доставки');
+                return false;
+            }
+
+            if (deliveryMethod === 'courier' && (!selectedDate || !selectedTime)) {
+                toast.error('Выберите дату и время для доставки');
+                return false;
+            }
+
+            if (!['receipt', 'card'].includes(paymentMethod)) {
+                toast.error('Выберите способ оплаты');
+                return false;
+            }
+
             return true;
         };
-    
+
         if (!validateInput()) {
             return;
         }
-    
+
         const currentDate = moment();
         const orderDate = deliveryMethod === 'pickup' && !selectedDate ? currentDate.format('DD.MM.YYYY') : selectedDate;
         const orderTime = deliveryMethod === 'pickup' && !selectedTime ? currentDate.format('HH:mm') : selectedTime;
-    
+
         const orderData = {
             orderDate,
             pickup: deliveryMethod === 'pickup',
@@ -161,16 +162,27 @@ export default function CartPage() {
             finalPrice: totalPrice.toFixed(2),
             usePoints: isChecked
         };
-    
+
         try {
             const response = await axios.post(`${process.env.API_BASE_URL}/order/create-order`, orderData, { withCredentials: true });
             const { finalPrice, scoresUsed } = response.data;
-    
-            await sendEmail(userData.email, scoresUsed, productCard, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities);
+
+            await sendEmail(
+                userData.email,
+                scoresUsed,
+                productCard,
+                finalPrice,
+                deliveryMethod,
+                paymentMethod,
+                orderDate,
+                orderTime,
+                userData,
+                productQuantities
+            );
             await clearCart();
-    
+
             setIsModalOpen(true);
-    
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Неизвестная ошибка';
             toast.error(errorMessage);
@@ -218,8 +230,10 @@ export default function CartPage() {
         setIsChecked(!isChecked);
     };
 
+
+
     // Отправка email пользователю и администратору
-    const sendEmail = async (email, scoresUsed, products, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities) => {
+    const sendEmail = async (email, scoresUsed, products, finalPrice, deliveryMethod, paymentMethod, orderDate, orderTime, userData, productQuantities, newQuantity) => {
         const productDetails = `
             <table style="width:100%; border-collapse: collapse;">
                 <thead>
@@ -239,6 +253,7 @@ export default function CartPage() {
             </table>
         `;
 
+    
         const deliveryDetails = deliveryMethod === 'courier' ? `
             <p>Способ доставки: Курьер</p>
             <p>Дата доставки: ${orderDate}</p>
@@ -247,7 +262,7 @@ export default function CartPage() {
         ` : `
             <p>Способ доставки: Самовывоз</p>
         `;
-
+    
         const emailText = `
             <p>ФИО: ${userData.surname} ${userData.name} ${userData.patronymic} | Номер телефона: ${userData.phone}</p>
             <p>Ваш заказ:</p>
@@ -257,7 +272,7 @@ export default function CartPage() {
             <p>Кол-во потраченных баллов: ${scoresUsed}</p>
             <p><strong>Итоговая цена: ${finalPrice} р</strong></p>
         `;
-
+    
         try {
             await axios.post(`${process.env.API_BASE_URL}/email/send-email-user`, {
                 to: email,
@@ -268,7 +283,7 @@ export default function CartPage() {
         } catch (error) {
             console.error('Error sending email:', error);
         }
-
+    
         try {
             await axios.post(`${process.env.API_BASE_URL}/email/send-email-admin`, {
                 subject: 'Заказ',
@@ -280,13 +295,21 @@ export default function CartPage() {
     };
 
     // Обработчик изменения количества продукта
-    const handleQuantityChange = (productId, newQuantity) => {
-        setProductQuantities(prevQuantities => ({
-            ...prevQuantities,
-            [productId]: newQuantity
-        }));
-    };
+   const handleQuantityChange = (productId, newQuantity) => {
+    // Обновляем количество товара в productCard
+    setProductCard(prevProducts => prevProducts.map(product => {
+        if (product.id === productId) {
+            return { ...product, quantity: newQuantity };
+        }
+        return product;
+    }));
 
+    // Обновляем количество товара в productQuantities
+    setProductQuantities(prevQuantities => ({
+        ...prevQuantities,
+        [productId]: newQuantity
+    }));
+};
     return (
         <div className={styles.dataMenu}>
             <div className={styles.headerDataMenu}>
@@ -313,7 +336,7 @@ export default function CartPage() {
                         </div>
                         <div className={styles.priceProduct}>Общая сумма товаров: <span>{totalPrice.toFixed(2)} р</span></div>
                     </div>
-                    
+
                     {!cartEmpty && (
                         <form action='' className={styles.userData}>
                             <div className={styles.pointTwo}>
@@ -351,7 +374,7 @@ export default function CartPage() {
                                     </div>
                                 </div>
                                 <div className={styles.forUser}>*Для редактирования данных, зайдите в профиль</div>
-                               
+
                             </div>
 
                             <div className={styles.titlePoint}>3. Способ доставки</div>
@@ -425,10 +448,10 @@ export default function CartPage() {
                     )}
                 </div>
             )}
-             {isModalOpen && (
+            {isModalOpen && (
                 <ModalCart onClose={() => setIsModalOpen(false)} />
             )}
-            
+
         </div>
     );
 }
